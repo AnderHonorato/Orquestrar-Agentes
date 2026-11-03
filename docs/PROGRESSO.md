@@ -54,3 +54,11 @@ As tarefas recorrentes devem consultar o commit atual do GitHub antes de editar,
 - **Vercel real**: deploy de prévia dpl_5g6vb7TxF9MJRVWpriSoCjBWS2U2 em estado READY, com HTML Organic e GET /api/health retornando ok=true, GET /api/providers retornando os 5 provedores e todas credenciais indisponíveis.
 - Na Vercel, rotas de aprovações retornam 401 sem token e 501 com token (não há persistência de arquivos serverless); a interface informa essa limitação. API persistente continua exclusiva ao servidor Node com DATA_DIR durável.
 - Próximo: deploy de backend Node com volume persistente em servidor disponível sem criar cobrança indevida, autenticação por usuário, HMAC externo/DB transacional para mais de uma instância, modelos com credenciais e conectores MCP isolados. O backup Git/Drive permanece pendente.
+
+
+### Verificação final de servidor online — 03/11/2026
+- GitHub Actions (Ubuntu, Node.js 22): https://github.com/AnderHonorato/Orquestrar-Agentes/actions/runs/41685563494, resultado **success**. Passaram npm test, node --check server/index.js e node --check web/app.js para o commit 2cb1c760.
+- Vercel de produção: deploy dpl_4uPXGE8G5o8wdi1PmcfdRhatr296, READY, SHA 2cb1c760, alias público https://orquestrar-organic-studio.vercel.app.
+- Smoke test HTTP externo na URL estável: página inicial renderizada, GET /api/health com ok=true, GET /api/providers retornando 5 provedores (todos sem chave configurada), GET /approvals-ui.js com mensagem explícita de indisponibilidade de persistência na Vercel.
+- Os testes HTTP reais do módulo persistente são executados no runner GitHub Actions com porta local e DATA_DIR temporário; NÃO existe backend Node persistente público hoje.
+- Próximo trabalho: implantar servidor Node com volume e autenticação protegida sem custo não autorizado; conectar modelos por credenciais secretas; implementar memória durável, MCP isolado, app desktop e APK, e enviar backup ZIP à pasta Drive.
