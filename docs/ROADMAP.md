@@ -60,3 +60,10 @@
 - **Persistência ainda não operacional**: o servidor continua instanciando registro em memória; falta conectar `approval-storage.js` ao ciclo de mutações com gravação antes da resposta e recuperação segura na inicialização.
 - Risco residual: a verificação atual não detecta substituição integral do snapshot e reescrita de toda a cadeia por um atacante com acesso ao disco; proteção requer assinatura/HMAC com segredo externo e controles de acesso. Também validar tipos e campos extras do snapshot.
 - Próximo: testes reais Node 22+, conectar armazenamento com fila de transações sem perda de atualização, testar reinicialização, concorrência e falha de gravação; sincronizar Drive quando disponível.
+
+## Execução 2026-11-03 — cobertura de orçamento no orquestrador
+- Adicionado `tests/orchestrator-budget-integration.test.js`: valida orçamento na entrada `validateRun`, bloqueio de limite insuficiente, limite exato incluindo líder, valores inválidos e oito especialistas.
+- Commits `2ce3fd8` e `4a2f28e`; branch de desenvolvimento, sem alterações na main.
+- GitHub combined status de `4a2f28e`: **Vercel failure**, com destino indicando `build-rate-limit`/upgrade de plano; isso não demonstra erro do código. **npm test e CI Node ainda não confirmados**.
+- Verificação de estado: `server/approval-service.js` já conecta persistência de aprovações, e `tests/approval-service.test.js` já cobre reinicialização, concorrência e rollback. Não duplicar esses módulos. O roadmap anterior estava desatualizado quanto a essa integração.
+- Próximo: executar `npm test` em Node 22+ por runner independente da Vercel; investigar limite de builds; validar integração HTTP com persistência, depois abordar memória de agentes. Drive não sincronizado nesta rodada.
