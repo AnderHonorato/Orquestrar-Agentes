@@ -95,5 +95,5 @@ export const server = http.createServer(async (req, res) => {
 });
 if (process.env.NODE_ENV !== 'test') {
   const port = Number(process.env.PORT || 4173);
-  server.listen(port, process.env.HOST || '0.0.0.0', () => console.log('Orquestrar disponível na porta ' + port));
+  server.listen(port, process.env.HOST || '127.0.0.1', () => console.log('Orquestrar disponível na porta ' + port));
 }
