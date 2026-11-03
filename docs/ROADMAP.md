@@ -81,3 +81,10 @@
 - Adicionado `tests/output-budget.test.js` com valores válidos/inválidos e mock de requisição sem credenciais. Commits: `6c5aee1`, `e3070e5`, `2f26e65`, `e49dac9`.
 - Limitação: provedor pode ignorar limite; não é teto de gasto. Não há contagem de tokens reais nem testes Node executados nesta rodada.
 - Próximo: executar `npm test` em Node 22+, validar payloads de Anthropic e Gemini por mock, capturar usage dos provedores sem expor chaves e verificar CI. Drive não sincronizado.
+
+## Execução 2026-11-03 — telemetria real de tokens por provedor
+- `server/engine.js` agora oferece `includeUsage` opt-in sem alterar o retorno string de chamadas legadas; `normalizeUsage` interpreta campos Anthropic, Gemini e APIs OpenAI compatíveis.
+- `server/orchestrator.js` usa retorno estruturado para especialistas e líder, persiste `usage` por agente e agrega tokens reportados com flag `incomplete` quando algum provedor não informa contagem. Custo monetário permanece `null` (não há tabela de preços validada).
+- Criado `tests/provider-usage.test.js` com quatro casos de normalização. Commits `3986696`, `df27170`, `91faa36`.
+- **Verificação pendente:** testes Node 22+, CI e chamadas reais não executados nesta rodada; sem garantia de compatibilidade para todas as versões de API. `main` não alterada; Google Drive não sincronizado.
+- Próximo: executar suíte completa, testar mock HTTP por provedor, validar o formato de resposta da UI e capturar usage em erros/parciais; depois avaliar precificação versionada sem inventar custos.
