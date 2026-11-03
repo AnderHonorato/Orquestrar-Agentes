@@ -51,7 +51,7 @@ export const server = http.createServer(async (req, res) => {
         const action = approvals.propose(await readBody(req));
         return send(res, 201, { ...action, fingerprint: fingerprint(action) });
       }
-      const reviewMatch = /^\\/api\\/approvals\\/([a-f0-9-]{36})\\/review$/.exec(pathname);
+      const reviewMatch = /^\/api\/approvals\/([a-f0-9-]{36})\/review$/.exec(pathname);
       if (reviewMatch && req.method === 'POST') {
         if (!isSameOrigin(req.headers)) return send(res, 403, { error: 'Origem não permitida' });
         const input = await readBody(req);
