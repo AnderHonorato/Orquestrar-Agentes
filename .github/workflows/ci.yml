@@ -1,0 +1,16 @@
+name: CI Orquestrar
+on:
+  push:
+    branches: [main, ander-flow/organic-orchestrator]
+  pull_request:
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm test
+      - run: node --check server/index.js
+      - run: node --check web/app.js
