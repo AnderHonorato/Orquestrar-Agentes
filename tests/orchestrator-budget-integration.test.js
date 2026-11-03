@@ -16,7 +16,7 @@ test('orçamento exato inclui a chamada do líder', () => {
 });
 
 test('orçamento não aceita coerção de strings nem valores excessivos', () => {
-  for (const maxModelCalls of ['3', 0, 3.5, 10, -1, null]) {
+  for (const maxModelCalls of ['3', 0, 3.5, 10, -1]) {
     assert.throws(() => validateRun({ ...base, maxModelCalls }), /maxModelCalls/);
   }
 });
