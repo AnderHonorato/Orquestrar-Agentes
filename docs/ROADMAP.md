@@ -67,3 +67,10 @@
 - GitHub combined status de `4a2f28e`: **Vercel failure**, com destino indicando `build-rate-limit`/upgrade de plano; isso não demonstra erro do código. **npm test e CI Node ainda não confirmados**.
 - Verificação de estado: `server/approval-service.js` já conecta persistência de aprovações, e `tests/approval-service.test.js` já cobre reinicialização, concorrência e rollback. Não duplicar esses módulos. O roadmap anterior estava desatualizado quanto a essa integração.
 - Próximo: executar `npm test` em Node 22+ por runner independente da Vercel; investigar limite de builds; validar integração HTTP com persistência, depois abordar memória de agentes. Drive não sincronizado nesta rodada.
+
+## Execução 2026-11-03 — orçamento preventivo de tokens
+- Criado `server/token-budget.js`, conectado a `validateRun` e coberto por cinco testes em `tests/token-budget.test.js`.
+- Campo opcional `maxEstimatedInputTokens` (100–1.000.000) bloqueia solicitações antes de chamar provedores quando a estimativa conservadora excede o teto. O cálculo usa bytes UTF-8/3 e reserva até 20.000 caracteres para o contexto do líder.
+- Commits `714df54`, `7839cc6`, `e6bef7b` na branch de desenvolvimento; `main` preservada.
+- **Limitação:** estimativa não equivale a tokens faturados, não mede saída nem garante limite de custo. Testes Node e CI ainda não verificados nesta execução; não alegar aprovação.
+- Próximo: executar `npm test` com Node 22+, validar CI independente da Vercel, medir tokens reais de uso dos provedores, aplicar tetos de saída por modelo e registrar custos com preços versionados. Drive não sincronizado.
