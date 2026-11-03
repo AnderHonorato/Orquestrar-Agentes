@@ -1,6 +1,7 @@
 import { complete, validateProvider } from './engine.js';
 import { validateCallBudget } from './call-budget.js';
 import { validateEstimatedTokenBudget } from './token-budget.js';
+import { validateOutputBudget } from './output-budget.js';
 
 export const defaultAgents = [
   { name: 'Arquiteto', role: 'Planejar arquitetura, dependências e riscos' },
@@ -15,6 +16,7 @@ export function validateRun(input) {
   const agents = input.agents || defaultAgents;
   if (!Array.isArray(agents) || agents.length < 1 || agents.length > 8) throw Error('Agentes inválidos');
   validateCallBudget(input, agents.length);
+  validateOutputBudget(input.maxOutputTokens);
   const fallback = input.provider || 'openai';
   validateProvider(fallback, input.model);
   validateProvider(input.leaderProvider || fallback, input.leaderModel || input.model);
@@ -36,7 +38,8 @@ export async function orchestrate(input) {
     const response = await complete({
       provider, model,
       system: 'Você é ' + agent.name + '. Especialidade: ' + agent.role + '. Responda em PT-BR. Evite inventar ações. Não afirme executar ferramentas ou editar arquivos.',
-      prompt: input.goal
+      prompt: input.goal,
+      maxOutputTokens: input.maxOutputTokens
     });
     return { agent: agent.name, provider, model: model || null, response };
   }));
@@ -51,6 +54,7 @@ export async function orchestrate(input) {
   try {
     summary = await complete({
       provider: leaderProvider, model: leaderModel,
+      maxOutputTokens: input.maxOutputTokens,
       system: 'Você é o agente líder. Consolide as contribuições e conflitos em um plano objetivo em PT-BR, priorize revisão de erros e critérios de aceite. Não afirme execução real.',
       prompt: 'Objetivo: ' + input.goal + '\n\n' + completed.map(item =>
         item.agent + ' (' + item.provider + (item.model ? '/' + item.model : '') + '):\n' + item.response
