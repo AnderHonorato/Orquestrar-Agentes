@@ -1,11 +1,14 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { server } from '../server/index.js';
+// Importação dinâmica impede a inicialização automática na porta padrão durante os testes.
 
 const token = 'integration-test-token-strong-123';
 const proposal = { type: 'git_write', title: 'Atualizar branch de testes', description: 'Revisar alteração antes de escrever no Git', target: 'AnderHonorato/Orquestrar-Agentes' };
 
 test('API de aprovações: autenticação, origem, revisão e auditoria', async () => {
+  const previousMode = process.env.NODE_ENV;
+  process.env.NODE_ENV = 'test';
+  const { server } = await import('../server/index.js');
   const previous = process.env.STUDIO_ACCESS_TOKEN;
   process.env.STUDIO_ACCESS_TOKEN = token;
   await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
@@ -42,6 +45,8 @@ test('API de aprovações: autenticação, origem, revisão e auditoria', async 
     assert.ok(audit.body.events.some(event => event.id === id && event.event === 'approved'));
   } finally {
     await new Promise((resolve, reject) => server.close(error => error ? reject(error) : resolve()));
+    if (previousMode === undefined) delete process.env.NODE_ENV;
+    else process.env.NODE_ENV = previousMode;
     if (previous === undefined) delete process.env.STUDIO_ACCESS_TOKEN;
     else process.env.STUDIO_ACCESS_TOKEN = previous;
   }
