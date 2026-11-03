@@ -74,3 +74,10 @@
 - Commits `714df54`, `7839cc6`, `e6bef7b` na branch de desenvolvimento; `main` preservada.
 - **Limitação:** estimativa não equivale a tokens faturados, não mede saída nem garante limite de custo. Testes Node e CI ainda não verificados nesta execução; não alegar aprovação.
 - Próximo: executar `npm test` com Node 22+, validar CI independente da Vercel, medir tokens reais de uso dos provedores, aplicar tetos de saída por modelo e registrar custos com preços versionados. Drive não sincronizado.
+
+## Execução 2026-11-03 — teto de saída por modelo
+- Criado `server/output-budget.js`: `maxOutputTokens` opcional (1–8192), padrão 1400; validação estrita em `validateRun`.
+- `server/engine.js` envia `max_tokens` para Anthropic e APIs compatíveis OpenAI/Ollama/OpenRouter; `generationConfig.maxOutputTokens` para Gemini. Especialistas e líder recebem o limite.
+- Adicionado `tests/output-budget.test.js` com valores válidos/inválidos e mock de requisição sem credenciais. Commits: `6c5aee1`, `e3070e5`, `2f26e65`, `e49dac9`.
+- Limitação: provedor pode ignorar limite; não é teto de gasto. Não há contagem de tokens reais nem testes Node executados nesta rodada.
+- Próximo: executar `npm test` em Node 22+, validar payloads de Anthropic e Gemini por mock, capturar usage dos provedores sem expor chaves e verificar CI. Drive não sincronizado.
