@@ -71,5 +71,5 @@ export async function orchestrate(input) {
   }
   return { status: failures.length ? 'partial' : 'completed', results: completed, failures, summary,
     leader: { provider: leaderProvider, model: leaderModel || null, usage: leaderUsage },
-    usage: { reportedInputTokens: [...completed.map(item => item.usage), leaderUsage].reduce((sum, item) => sum + (item?.inputTokens ?? 0), 0), reportedOutputTokens: [...completed.map(item => item.usage), leaderUsage].reduce((sum, item) => sum + (item?.outputTokens ?? 0), 0), incomplete: [...completed.map(item => item.usage), leaderUsage].some(item => !item || item.inputTokens === null || item.outputTokens === null), currencyCost: null } };
+    usage: { reportedInputTokens: [...completed.map(item => item.usage), leaderUsage].reduce((sum, item) => sum + (item?.inputTokens ?? 0), 0), reportedOutputTokens: [...completed.map(item => item.usage), leaderUsage].reduce((sum, item) => sum + (item?.outputTokens ?? 0), 0), incomplete: failures.length > 0 || [...completed.map(item => item.usage), leaderUsage].some(item => !item || item.inputTokens === null || item.outputTokens === null), currencyCost: null } };
 }
