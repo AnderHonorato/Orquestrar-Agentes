@@ -1,5 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { mkdtemp, rm } from 'node:fs/promises';
+import path from 'node:path';
+import { tmpdir } from 'node:os';
 // Importação dinâmica impede a inicialização automática na porta padrão durante os testes.
 
 const token = 'integration-test-token-strong-123';
@@ -7,6 +10,9 @@ const proposal = { type: 'git_write', title: 'Atualizar branch de testes', descr
 
 test('API de aprovações: autenticação, origem, revisão e auditoria', async () => {
   const previousMode = process.env.NODE_ENV;
+  const previousDataDir = process.env.DATA_DIR;
+  const directory = await mkdtemp(path.join(tmpdir(), 'organic-http-'));
+  process.env.DATA_DIR = directory;
   process.env.NODE_ENV = 'test';
   const { server } = await import('../server/index.js');
   const previous = process.env.STUDIO_ACCESS_TOKEN;
@@ -49,5 +55,8 @@ test('API de aprovações: autenticação, origem, revisão e auditoria', async 
     else process.env.NODE_ENV = previousMode;
     if (previous === undefined) delete process.env.STUDIO_ACCESS_TOKEN;
     else process.env.STUDIO_ACCESS_TOKEN = previous;
+    if (previousDataDir === undefined) delete process.env.DATA_DIR;
+    else process.env.DATA_DIR = previousDataDir;
+    await rm(directory, { recursive: true, force: true });
   }
 });

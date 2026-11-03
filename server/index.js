@@ -7,7 +7,7 @@ import { catalog } from './engine.js';
 import { orchestrate, defaultAgents, validateRun } from './orchestrator.js';
 import { isAuthorized, isSameOrigin, publicAccessStatus } from './security.js';
 import { appendHistory, readHistory } from './storage.js';
-import { createApprovalRegistry } from './approval-registry.js';
+import { createPersistentApprovalService } from './approval-service.js';
 import { fingerprint } from './approvals.js';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const assets = {
@@ -22,7 +22,7 @@ const assets = {
 };
 let activeRuns = 0;
 const recentRuns = [];
-const approvals = createApprovalRegistry();
+const approvals = await createPersistentApprovalService();
 const send = (res, status, payload) => {
   res.writeHead(status, { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store', 'x-content-type-options': 'nosniff', 'referrer-policy': 'no-referrer' });
   res.end(JSON.stringify(payload));
@@ -49,14 +49,14 @@ export const server = http.createServer(async (req, res) => {
       if (pathname === '/api/approvals/audit' && req.method === 'GET') return send(res, 200, { valid: approvals.verify(), events: approvals.audit() });
       if (pathname === '/api/approvals' && req.method === 'POST') {
         if (!isSameOrigin(req.headers)) return send(res, 403, { error: 'Origem não permitida' });
-        const action = approvals.propose(await readBody(req));
+        const action = await approvals.propose(await readBody(req));
         return send(res, 201, { ...action, fingerprint: fingerprint(action) });
       }
       const reviewMatch = /^\/api\/approvals\/([a-f0-9-]{36})\/review$/.exec(pathname);
       if (reviewMatch && req.method === 'POST') {
         if (!isSameOrigin(req.headers)) return send(res, 403, { error: 'Origem não permitida' });
         const input = await readBody(req);
-        const action = approvals.review(reviewMatch[1], input.decision, input.note ?? '', input.fingerprint);
+        const action = await approvals.review(reviewMatch[1], input.decision, input.note ?? '', input.fingerprint);
         return send(res, 200, { ...action, fingerprint: fingerprint(action) });
       }
       if (req.method === 'GET' && pathname === '/api/history') return send(res, 200, { items: await readHistory() });
