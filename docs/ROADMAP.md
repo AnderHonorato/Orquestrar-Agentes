@@ -45,3 +45,10 @@
 - Commit `85a609a` na branch `ander-flow/organic-orchestrator`; `main` não alterada.
 - Status combinado consultado no GitHub: nenhuma verificação retornada para esse commit; isso **não comprova testes aprovados**.
 - Próximo lote: executar testes Node 22+ e smoke test da interface; auditar persistência transacional e configurações de hospedagem antes de liberar acesso público. Google Drive não sincronizado nesta execução.
+
+## Execução 2026-11-03 — base de persistência de aprovações
+- Criado `server/approval-storage.js` com snapshots JSON versionados, gravação por arquivo temporário + rename, permissões restritas e fila de escrita sequencial.
+- Criado `tests/approval-storage.test.js` cobrindo leitura inicial, concorrência de gravações, rejeição de versão inválida e falha fechada em JSON corrompido.
+- Commits `17dfd40` e `deec55c`. **Módulo ainda não conectado ao registro nem às rotas HTTP**; aprovações continuam voláteis. Não declarar persistência operacional.
+- Bloqueio de verificação: ambiente local sem resolução DNS para github.com; testes Node e CI não executados nesta rodada. Google Drive não sincronizado.
+- Próximo: adicionar exportação/restauração validada no registro, verificar cadeia de hashes e consistência entre eventos e itens, conectar salvamento com rollback/falha fechada nas mutações, então executar testes e CI.
