@@ -1,4 +1,5 @@
 import { complete, validateProvider } from './engine.js';
+import { validateCallBudget } from './call-budget.js';
 
 export const defaultAgents = [
   { name: 'Arquiteto', role: 'Planejar arquitetura, dependências e riscos' },
@@ -12,6 +13,7 @@ export function validateRun(input) {
   if (typeof input.goal !== 'string' || !input.goal.trim() || input.goal.length > 6000) throw Error('Objetivo inválido');
   const agents = input.agents || defaultAgents;
   if (!Array.isArray(agents) || agents.length < 1 || agents.length > 8) throw Error('Agentes inválidos');
+  validateCallBudget(input, agents.length);
   const fallback = input.provider || 'openai';
   validateProvider(fallback, input.model);
   validateProvider(input.leaderProvider || fallback, input.leaderModel || input.model);
