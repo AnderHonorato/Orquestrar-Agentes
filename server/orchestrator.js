@@ -1,5 +1,6 @@
 import { complete, validateProvider } from './engine.js';
 import { validateCallBudget } from './call-budget.js';
+import { validateEstimatedTokenBudget } from './token-budget.js';
 
 export const defaultAgents = [
   { name: 'Arquiteto', role: 'Planejar arquitetura, dependências e riscos' },
@@ -22,6 +23,7 @@ export function validateRun(input) {
         typeof agent.role !== 'string' || !agent.role.trim() || agent.role.length > 500) throw Error('Agentes inválidos');
     validateProvider(agent.provider || fallback, agent.model || input.model);
   }
+  validateEstimatedTokenBudget(input, agents);
   return agents;
 }
 
