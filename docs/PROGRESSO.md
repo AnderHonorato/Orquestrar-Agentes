@@ -62,3 +62,10 @@ As tarefas recorrentes devem consultar o commit atual do GitHub antes de editar,
 - Smoke test HTTP externo na URL estável: página inicial renderizada, GET /api/health com ok=true, GET /api/providers retornando 5 provedores (todos sem chave configurada), GET /approvals-ui.js com mensagem explícita de indisponibilidade de persistência na Vercel.
 - Os testes HTTP reais do módulo persistente são executados no runner GitHub Actions com porta local e DATA_DIR temporário; NÃO existe backend Node persistente público hoje.
 - Próximo trabalho: implantar servidor Node com volume e autenticação protegida sem custo não autorizado; conectar modelos por credenciais secretas; implementar memória durável, MCP isolado, app desktop e APK, e enviar backup ZIP à pasta Drive.
+
+
+## Lote incremental — 03/11/2026, tarde (controle preventivo de chamadas)
+- Adicionado `server/call-budget.js`, integrado em `validateRun` antes de qualquer chamada externa: `maxModelCalls` inteiro entre 1 e 9, com reserva obrigatória para todos os especialistas e líder. O padrão é 9 chamadas; não há retentativas automáticas no orquestrador atual.
+- Criado `tests/call-budget.test.js` com quatro casos (padrão, insuficiência, entradas inválidas, mínimo). Arquivos gravados na branch `ander-flow/organic-orchestrator`, sem alteração na main.
+- **Ainda não confirmado:** resultado da CI e execução real dos testes deste lote. O controle limita número de requisições, NÃO tokens nem custo em reais; chamadas de APIs podem gerar cobrança mesmo dentro do limite.
+- Próximo: verificar Actions deste commit; expor seletor `maxModelCalls` na UI, limites de tokens/custo por provedor e cancelamento de chamadas; persistência e isolamento por usuário continuam pendentes.
