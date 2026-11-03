@@ -27,3 +27,7 @@ summary{cursor:pointer;font-weight:700}
 :root[data-theme="dark"] .secondary,:root[data-theme="dark"] .theme-toggle{color:#dbefda;border-color:#49634c}
 @media(max-width:550px){.library-controls{grid-template-columns:1fr}.library-card p{min-height:0}.theme-toggle{width:auto}}
 @media(prefers-reduced-motion:reduce){.library-card{transition:none}.library-card:hover{transform:none}}
+
+.agent{flex-wrap:wrap}.agent-config{flex:1 1 100%;margin-top:2px;border:1px solid #e0e8dc}
+.agent-config input,.agent-config select{font-size:13px;padding:12px}.agent-config summary{font-size:12px}
+:root[data-theme="dark"] .agent-config{border-color:#3d5644}

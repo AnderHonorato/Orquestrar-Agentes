@@ -1,6 +1,7 @@
 import { library, categories } from './catalog.js';
 const $ = id => document.getElementById(id);
 let agents = [];
+let modelProviders = [];
 function element(tag, text, cls) {
   const node = document.createElement(tag);
   if (text !== undefined) node.textContent = text;
@@ -100,6 +101,47 @@ function buildTheme() {
   button.addEventListener('click', () => apply(document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark'));
   document.querySelector('aside').append(button);
 }
+
+function modelChoice(id, emptyLabel) {
+  const select = element('select');
+  select.id = id;
+  const inherit = element('option', emptyLabel);
+  inherit.value = '';
+  select.append(inherit);
+  modelProviders.forEach(provider => {
+    const option = element('option', provider.id + (provider.ready ? '' : ' · configurar'));
+    option.value = provider.id;
+    select.append(option);
+  });
+  return select;
+}
+function buildAdvancedAgent(row, index) {
+  const details = element('details', undefined, 'agent-config');
+  const summary = element('summary', 'Modelo individual (opcional)');
+  const providerLabel = element('label', 'Provedor deste especialista');
+  const provider = modelChoice('agent-provider-' + index, 'Usar o provedor principal');
+  provider.dataset.agentProvider = index;
+  const modelLabel = element('label', 'Nome do modelo');
+  const model = element('input');
+  model.dataset.agentModel = index;
+  model.placeholder = 'Herdar o modelo principal';
+  model.setAttribute('aria-label', 'Modelo do especialista ' + index);
+  details.append(summary, providerLabel, provider, modelLabel, model);
+  row.append(details);
+}
+function buildLeader() {
+  const fields = document.querySelector('#studio .fields');
+  const wrapper = element('div');
+  const label = element('label', 'Provedor do líder');
+  const provider = modelChoice('leader-provider', 'Usar o provedor principal');
+  const modelLabel = element('label', 'Modelo do líder (opcional)');
+  const model = element('input');
+  model.id = 'leader-model';
+  model.placeholder = 'Herdar o modelo principal';
+  wrapper.append(label, provider, modelLabel, model);
+  fields.append(wrapper);
+}
+
 async function init() {
   buildAccess();
   buildLibrary();
@@ -109,6 +151,8 @@ async function init() {
     if (!response.ok) throw Error('Servidor indisponível.');
     const data = await response.json();
     agents = data.agents;
+    modelProviders = data.providers;
+    buildLeader();
     $('notice').textContent = data.mode === 'somente-leitura' ? 'Servidor em modo somente leitura; configure STUDIO_ACCESS_TOKEN.' : 'Execuções exigem seu código de acesso e credenciais do modelo no servidor.';
     for (const provider of data.providers) {
       const option = element('option', provider.id + (provider.ready ? ' · configurado' : ' · sem chave'));
@@ -129,6 +173,7 @@ async function init() {
       check.dataset.index = index;
       check.setAttribute('aria-label', 'Ativar ' + agent.name);
       row.append(icon, info, check);
+      buildAdvancedAgent(row,index);
       $('agents').append(row);
     });
   } catch (error) { $('notice').textContent = error.message; }
@@ -136,13 +181,18 @@ async function init() {
 $('run').addEventListener('click', async () => {
   const goal = $('goal').value.trim();
   if (!goal) { $('notice').textContent = 'Descreva um objetivo.'; return; }
-  const selected = agents.filter((agent, index) => document.querySelector('[data-index="' + index + '"]')?.checked);
+  const selected = agents.map((agent, index) => ({
+    ...agent,
+    ...(document.querySelector('[data-agent-provider="' + index + '"]')?.value ? {provider: document.querySelector('[data-agent-provider="' + index + '"]').value} : {}),
+    ...(document.querySelector('[data-agent-model="' + index + '"]')?.value.trim() ? {model: document.querySelector('[data-agent-model="' + index + '"]').value.trim()} : {}),
+    enabled: Boolean(document.querySelector('[data-index="' + index + '"]')?.checked)
+  })).filter(agent => agent.enabled).map(({enabled, ...agent}) => agent);
   if (!selected.length) { $('notice').textContent = 'Selecione ao menos um agente.'; return; }
   const button = $('run');
   button.disabled = true;
   button.textContent = 'Equipe trabalhando…';
   try {
-    const response = await fetch('/api/runs', { method: 'POST', headers: apiHeaders(), body: JSON.stringify({ goal, provider: $('provider').value, model: $('model').value.trim() || undefined, agents: selected }) });
+    const response = await fetch('/api/runs', { method: 'POST', headers: apiHeaders(), body: JSON.stringify({ goal, provider: $('provider').value, model: $('model').value.trim() || undefined, agents: selected, leaderProvider: $('leader-provider')?.value || undefined, leaderModel: $('leader-model')?.value.trim() || undefined }) });
     const data = await response.json();
     if (!response.ok) throw Error(data.error || 'Falha na execução.');
     rememberLocal(data);
