@@ -26,3 +26,9 @@
 - Commits: dc14e1e e 617efc7. Testes/CI deste lote ainda NÃO confirmados.
 - Bloqueios: registro somente em memória, sem persistência ou UI conectada; implantação não verificada; Google Drive não sincronizado.
 - Próximo: testes HTTP integrados, persistência com armazenamento transacional e interface de revisão; verificar CI antes de liberar ações.
+
+## Execução 2026-11-03 — cobertura HTTP
+- Adicionado `tests/approvals-http.test.js` com testes de autenticação, rejeição de origem externa, proposta, fingerprint incorreto, aprovação única, ausência de execução externa e integridade da auditoria.
+- Commits: `90d9923` e correção `9e8acab` (importação dinâmica em modo teste evita inicialização do servidor padrão).
+- Verificação GitHub: status Vercel **pending** no commit `9e8acab`; **não** há confirmação de execução de `npm test` ou CI de testes. Teste precisa ser executado em ambiente Node 22+.
+- Próximo: executar `npm test`, corrigir falhas observadas, persistir propostas de forma segura e conectar a UI Organic. A main não foi alterada neste lote; Drive não sincronizado.
