@@ -39,3 +39,9 @@
 - Adicionado `tests/approvals-ui.test.js` para verificar referências do HTML, fingerprint e ausência de avaliação dinâmica de código.
 - Commits: cbea040, f04a871, f238a2e, bc332fd. **Testes ainda não executados nesta execução**; nenhuma afirmação de deploy validado.
 - Próximo: testar em Node 22+, persistir registro de propostas/auditoria com recuperação e integridade, validar UI em navegador, verificar CI, depois conectar criação de propostas à interface. Drive ainda não sincronizado.
+
+## Execução 2026-11-03 — endurecimento da exposição de rede
+- Corrigido `server/index.js`: o servidor agora escuta em `127.0.0.1` por padrão, alinhado ao README. A exposição em rede exige `HOST=0.0.0.0` explícito e controles de autenticação/rede apropriados.
+- Commit `85a609a` na branch `ander-flow/organic-orchestrator`; `main` não alterada.
+- Status combinado consultado no GitHub: nenhuma verificação retornada para esse commit; isso **não comprova testes aprovados**.
+- Próximo lote: executar testes Node 22+ e smoke test da interface; auditar persistência transacional e configurações de hospedagem antes de liberar acesso público. Google Drive não sincronizado nesta execução.
