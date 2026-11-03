@@ -145,6 +145,7 @@ $('run').addEventListener('click', async () => {
     const response = await fetch('/api/runs', { method: 'POST', headers: apiHeaders(), body: JSON.stringify({ goal, provider: $('provider').value, model: $('model').value.trim() || undefined, agents: selected }) });
     const data = await response.json();
     if (!response.ok) throw Error(data.error || 'Falha na execução.');
+    rememberLocal(data);
     $('output').hidden = false;
     $('result').textContent = data.summary;
     const output = $('output');
@@ -165,6 +166,7 @@ async function loadHistory() {
     const response = await fetch('/api/history', { headers: { 'x-studio-token': sessionStorage.getItem('studio-key') || '' } });
     const data = await response.json();
     if (!response.ok) throw Error(data.error || 'Acesso não autorizado.');
+    if (data.storage === 'browser') { try { data.items = JSON.parse(sessionStorage.getItem('organic-runs') || '[]'); } catch { data.items = []; } }
     node.replaceChildren();
     if (!data.items.length) node.append(element('p', 'Sem execuções.'));
     data.items.forEach(item => {
@@ -175,3 +177,7 @@ async function loadHistory() {
   } catch (error) { node.textContent = error.message; }
 }
 init();
+
+function rememberLocal(entry) {
+  try { const entries=JSON.parse(sessionStorage.getItem('organic-runs') || '[]'); sessionStorage.setItem('organic-runs',JSON.stringify([entry,...entries].slice(0,20))); } catch { /* histórico opcional */ }
+}
