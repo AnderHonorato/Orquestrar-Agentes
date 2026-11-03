@@ -32,3 +32,10 @@
 - Commits: `90d9923` e correção `9e8acab` (importação dinâmica em modo teste evita inicialização do servidor padrão).
 - Verificação GitHub: status Vercel **pending** no commit `9e8acab`; **não** há confirmação de execução de `npm test` ou CI de testes. Teste precisa ser executado em ambiente Node 22+.
 - Próximo: executar `npm test`, corrigir falhas observadas, persistir propostas de forma segura e conectar a UI Organic. A main não foi alterada neste lote; Drive não sincronizado.
+
+## Execução 2026-11-03 — painel Organic de aprovações
+- Criados `web/approvals-ui.js`, aba de aprovações no menu e rota estática no servidor. O painel lista propostas, valida o sinal de integridade da auditoria e envia decisões com fingerprint e token de sessão.
+- Aprovação/rejeição continuam sem executar ações externas. Sem token, a interface exibe erro de autorização.
+- Adicionado `tests/approvals-ui.test.js` para verificar referências do HTML, fingerprint e ausência de avaliação dinâmica de código.
+- Commits: cbea040, f04a871, f238a2e, bc332fd. **Testes ainda não executados nesta execução**; nenhuma afirmação de deploy validado.
+- Próximo: testar em Node 22+, persistir registro de propostas/auditoria com recuperação e integridade, validar UI em navegador, verificar CI, depois conectar criação de propostas à interface. Drive ainda não sincronizado.
