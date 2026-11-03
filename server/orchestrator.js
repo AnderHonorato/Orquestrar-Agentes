@@ -39,9 +39,10 @@ export async function orchestrate(input) {
       provider, model,
       system: 'Você é ' + agent.name + '. Especialidade: ' + agent.role + '. Responda em PT-BR. Evite inventar ações. Não afirme executar ferramentas ou editar arquivos.',
       prompt: input.goal,
-      maxOutputTokens: input.maxOutputTokens
+      maxOutputTokens: input.maxOutputTokens,
+      includeUsage: true
     });
-    return { agent: agent.name, provider, model: model || null, response };
+    return { agent: agent.name, provider, model: model || null, response: response.text, usage: response.usage };
   }));
   const completed = results.filter(result => result.status === 'fulfilled').map(result => result.value);
   const failures = results.flatMap((result, index) => result.status === 'rejected' ? [
@@ -51,8 +52,10 @@ export async function orchestrate(input) {
   const leaderProvider = input.leaderProvider || fallback;
   const leaderModel = input.leaderModel || input.model;
   let summary;
+  let leaderUsage = null;
   try {
-    summary = await complete({
+    const leaderResult = await complete({
+      includeUsage: true,
       provider: leaderProvider, model: leaderModel,
       maxOutputTokens: input.maxOutputTokens,
       system: 'Você é o agente líder. Consolide as contribuições e conflitos em um plano objetivo em PT-BR, priorize revisão de erros e critérios de aceite. Não afirme execução real.',
@@ -60,10 +63,13 @@ export async function orchestrate(input) {
         item.agent + ' (' + item.provider + (item.model ? '/' + item.model : '') + '):\n' + item.response
       ).join('\n\n').slice(0,20000)
     });
+    summary = leaderResult.text;
+    leaderUsage = leaderResult.usage;
   } catch (error) {
     failures.push({ agent: 'Líder', error: String(error?.message || error).slice(0,220) });
     summary = completed.map(item => item.agent + ' (' + item.provider + '):\n' + item.response).join('\n\n');
   }
   return { status: failures.length ? 'partial' : 'completed', results: completed, failures, summary,
-    leader: { provider: leaderProvider, model: leaderModel || null } };
+    leader: { provider: leaderProvider, model: leaderModel || null, usage: leaderUsage },
+    usage: { reportedInputTokens: [...completed.map(item => item.usage), leaderUsage].reduce((sum, item) => sum + (item?.inputTokens ?? 0), 0), reportedOutputTokens: [...completed.map(item => item.usage), leaderUsage].reduce((sum, item) => sum + (item?.outputTokens ?? 0), 0), incomplete: [...completed.map(item => item.usage), leaderUsage].some(item => !item || item.inputTokens === null || item.outputTokens === null), currencyCost: null } };
 }
