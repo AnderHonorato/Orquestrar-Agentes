@@ -44,3 +44,13 @@ As tarefas recorrentes devem consultar o commit atual do GitHub antes de editar,
 - Commits: `1098440` e `6387710` na branch de desenvolvimento; `main` não alterada.
 - **Não verificado ainda**: resultado da CI deste lote; registro ainda não conectado às rotas HTTP nem persistido. Hash encadeado detecta alteração acidental, mas não substitui armazenamento imutável ou assinatura.
 - Próximo lote: integrar rotas autenticadas com validação de origem e testes HTTP, evitando expor propostas entre usuários; depois persistência durável.
+
+
+## Execução 2026-11-03 — persistência conectada e testes online
+- Base inicial verificada: commit f691da6 já tinha CI concluída com sucesso no GitHub Actions (run 41684109377).
+- Commit 9db8750 conectou server/approval-service.js ao servidor HTTP. O serviço carrega snapshots antes de escutar, valida hashes/correspondência no restore, serializa propostas e revisões e publica o novo estado só depois de persistir no arquivo. Falha de gravação retorna erro 503 sem confirmar aprovação.
+- Testes criados/ajustados para reinício do serviço, 12 propostas concorrentes, falha de armazenamento, snapshot adulterado, limite de itens e HTTP com diretório temporário.
+- **GitHub Actions real**: workflow https://github.com/AnderHonorato/Orquestrar-Agentes/actions/runs/41685117371 concluído SUCCESS; passo npm test, node --check server/index.js e node --check web/app.js concluíram SUCCESS no runner online Ubuntu/Node 22.
+- **Vercel real**: deploy de prévia dpl_5g6vb7TxF9MJRVWpriSoCjBWS2U2 em estado READY, com HTML Organic e GET /api/health retornando ok=true, GET /api/providers retornando os 5 provedores e todas credenciais indisponíveis.
+- Na Vercel, rotas de aprovações retornam 401 sem token e 501 com token (não há persistência de arquivos serverless); a interface informa essa limitação. API persistente continua exclusiva ao servidor Node com DATA_DIR durável.
+- Próximo: deploy de backend Node com volume persistente em servidor disponível sem criar cobrança indevida, autenticação por usuário, HMAC externo/DB transacional para mais de uma instância, modelos com credenciais e conectores MCP isolados. O backup Git/Drive permanece pendente.

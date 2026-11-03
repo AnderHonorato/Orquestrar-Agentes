@@ -43,5 +43,18 @@ async function refresh() {
     }
   } catch (error) { status.textContent = error.message; mount.replaceChildren(); }
 }
-document.querySelector('[data-view="approvals"]').addEventListener('click', refresh);
-document.getElementById('refresh-approvals').addEventListener('click', refresh);
+async function explainOrLoad() {
+  try {
+    const response = await fetch('/api/health');
+    const health = await response.json();
+    if (health.hosting === 'vercel-serverless') {
+      mount.replaceChildren();
+      mount.append(node('p', 'O painel de aprovações precisa de servidor Node com armazenamento persistente. Esta prévia Vercel é somente para visualização.'));
+      status.textContent = 'Prévia segura: nenhuma aprovação será registrada aqui.';
+      return;
+    }
+  } catch { /* A solicitação normal apresentará eventual erro */ }
+  return refresh();
+}
+document.querySelector('[data-view="approvals"]').addEventListener('click', explainOrLoad);
+document.getElementById('refresh-approvals').addEventListener('click', explainOrLoad);
