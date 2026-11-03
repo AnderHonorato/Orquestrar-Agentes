@@ -88,3 +88,11 @@
 - Criado `tests/provider-usage.test.js` com quatro casos de normalização. Commits `3986696`, `df27170`, `91faa36`.
 - **Verificação pendente:** testes Node 22+, CI e chamadas reais não executados nesta rodada; sem garantia de compatibilidade para todas as versões de API. `main` não alterada; Google Drive não sincronizado.
 - Próximo: executar suíte completa, testar mock HTTP por provedor, validar o formato de resposta da UI e capturar usage em erros/parciais; depois avaliar precificação versionada sem inventar custos.
+
+## Execução 2026-11-03 — correção da telemetria em falhas parciais
+- Corrigido `server/orchestrator.js`: `usage.incomplete` passa a ser `true` quando algum especialista ou o líder falha, mesmo que todos os agentes concluídos tenham informado tokens. Antes a telemetria podia parecer completa em execução parcial.
+- Adicionado teste de regressão `tests/orchestrator-partial-usage.test.js` com mock HTTP de Ollama, especialista indisponível e líder bem-sucedido. Verifica status parcial, contagens apenas das respostas obtidas, `incomplete=true` e custo `null`.
+- Commits `d72858f` e `d70dc55`; `main` não foi modificada.
+- **Verificação limitada:** clone/execução local indisponível por falha de resolução DNS de github.com no container. Teste adicionado, mas **não executado**; nenhuma aprovação de CI presumida.
+- Próximo: executar `npm test` em runner Node 22+, validar UI com uso parcial, tratar telemetria de falhas sem registrar segredos e implementar custo por tabela versionada apenas após verificar preços oficiais.
+- Drive não sincronizado.
