@@ -37,3 +37,10 @@ Atualização: 03/11/2026. Branch de desenvolvimento: ander-flow/organic-orchest
 6. Exportar repositório/ZIP e inserir na pasta do Google Drive, verificando o upload.
 
 As tarefas recorrentes devem consultar o commit atual do GitHub antes de editar, para não sobrescrever trabalho paralelo.
+
+## Lote incremental — 03/11/2026, 08h (Brasília)
+- Adicionado `server/approval-registry.js`: registro de propostas em memória, limite de itens, revisão vinculada ao fingerprint, cópias defensivas e auditoria hash encadeada; nenhuma execução externa.
+- Adicionado `tests/approval-registry.test.js`: testes de aprovação/rejeição, limite, fingerprint e isolamento de retornos.
+- Commits: `1098440` e `6387710` na branch de desenvolvimento; `main` não alterada.
+- **Não verificado ainda**: resultado da CI deste lote; registro ainda não conectado às rotas HTTP nem persistido. Hash encadeado detecta alteração acidental, mas não substitui armazenamento imutável ou assinatura.
+- Próximo lote: integrar rotas autenticadas com validação de origem e testes HTTP, evitando expor propostas entre usuários; depois persistência durável.
