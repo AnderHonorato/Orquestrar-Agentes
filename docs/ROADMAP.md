@@ -52,3 +52,11 @@
 - Commits `17dfd40` e `deec55c`. **Módulo ainda não conectado ao registro nem às rotas HTTP**; aprovações continuam voláteis. Não declarar persistência operacional.
 - Bloqueio de verificação: ambiente local sem resolução DNS para github.com; testes Node e CI não executados nesta rodada. Google Drive não sincronizado.
 - Próximo: adicionar exportação/restauração validada no registro, verificar cadeia de hashes e consistência entre eventos e itens, conectar salvamento com rollback/falha fechada nas mutações, então executar testes e CI.
+
+## Execução 2026-11-03 — restauração validada do registro
+- Registro agora exporta `snapshot()` e aceita `createApprovalRegistry({ snapshot })`, verificando versão, limites, IDs duplicados, estados, flags de execução, hashes encadeados e correspondência entre eventos e propostas.
+- Testes adicionados em `tests/approval-restore.test.js` para round-trip, adulteração de proposta, alteração/remoção de auditoria e duplicatas.
+- Commits `386e75a` e `87ab13a` na branch de desenvolvimento. **Testes ainda não executados**; sem evidência de CI aprovado.
+- **Persistência ainda não operacional**: o servidor continua instanciando registro em memória; falta conectar `approval-storage.js` ao ciclo de mutações com gravação antes da resposta e recuperação segura na inicialização.
+- Risco residual: a verificação atual não detecta substituição integral do snapshot e reescrita de toda a cadeia por um atacante com acesso ao disco; proteção requer assinatura/HMAC com segredo externo e controles de acesso. Também validar tipos e campos extras do snapshot.
+- Próximo: testes reais Node 22+, conectar armazenamento com fila de transações sem perda de atualização, testar reinicialização, concorrência e falha de gravação; sincronizar Drive quando disponível.
