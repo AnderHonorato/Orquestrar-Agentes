@@ -143,3 +143,19 @@ pre{white-space:pre-wrap;overflow-wrap:anywhere;font:inherit;line-height:1.75}
 .agent .portrait:active .head{transform:translateY(5px) scale(.97)}
 @keyframes organic-aura{50%{box-shadow:0 0 0 12px color-mix(in srgb,var(--agent-glow) 3%,transparent)}}
 @media(prefers-reduced-motion:reduce){.agent[data-mood="working"] .portrait:before{animation:none}.agent .head,.agent .eye-lids{animation:none!important}}
+
+/* Olhares específicos por personalidade: formas, não só cores. */
+.agent:nth-child(1) .eye{rx:12;ry:17}
+.agent:nth-child(2) .eye{rx:16;ry:19}
+.agent:nth-child(3) .eye{rx:10;ry:13}
+.agent:nth-child(4) .eye{rx:15;ry:16}
+.agent:nth-child(2) .eye-left{transform:rotate(-8deg);transform-origin:87px 110px}
+.agent:nth-child(2) .eye-right{transform:rotate(8deg);transform-origin:154px 110px}
+.agent:nth-child(3) .eye-left{transform:rotate(12deg);transform-origin:87px 110px}
+.agent:nth-child(3) .eye-right{transform:rotate(-12deg);transform-origin:154px 110px}
+.agent:nth-child(4) .eye-left{transform:rotate(-6deg);transform-origin:87px 110px}
+.agent:nth-child(4) .eye-right{transform:rotate(6deg);transform-origin:154px 110px}
+.agent[data-mood="error"] .eye{ry:20}
+.agent[data-mood="done"] .eye{ry:12}
+.agent .eye{transition:ry .22s ease}
+@media(prefers-reduced-motion:reduce){.agent .eye{transition:none}}
