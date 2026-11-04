@@ -9,6 +9,17 @@ import { isAuthorized, isSameOrigin, publicAccessStatus } from './security.js';
 import { appendHistory, readHistory } from './storage.js';
 import { createPersistentApprovalService } from './approval-service.js';
 import { fingerprint } from './approvals.js';
+import { estimateRunCosts } from './run-costs.js';
+// Tarifas são opcionais e fornecidas pelo operador no servidor; nunca pelo navegador.
+// Configuração inválida impede a inicialização para evitar totais enganosos.
+const priceBook = (() => {
+  if (!process.env.STUDIO_PRICE_BOOK_JSON) return null;
+  const value = JSON.parse(process.env.STUDIO_PRICE_BOOK_JSON);
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    throw new Error('STUDIO_PRICE_BOOK_JSON deve ser um objeto');
+  }
+  return value;
+})();
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const assets = {
   '/': ['index.html', 'text/html; charset=utf-8'],
@@ -73,7 +84,7 @@ export const server = http.createServer(async (req, res) => {
         activeRuns++;
         try {
           const result = await orchestrate(input);
-          const entry = { id: randomUUID(), createdAt: new Date().toISOString(), goal: input.goal, provider: input.provider || 'openai', ...result };
+          const entry = { id: randomUUID(), createdAt: new Date().toISOString(), goal: input.goal, provider: input.provider || 'openai', ...result, ...(priceBook ? { costEstimate: estimateRunCosts(result, priceBook) } : {}) };
           await appendHistory(entry);
           return send(res, 200, entry);
         } finally { activeRuns--; }
