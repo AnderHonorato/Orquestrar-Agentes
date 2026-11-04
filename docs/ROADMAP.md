@@ -133,3 +133,10 @@
 - Commit de implementação: `dc420bf`. **Sem testes executados ou CI confirmada nesta execução.** Não afirmar deploy nem custos faturados.
 - Próximo: teste HTTP com variável de ambiente, validação de configurações por modelo, exibição Organic de custos e execução da suíte completa Node 22+.
 - Sincronização Google Drive, desktop e APK continuam pendentes.
+
+## Execução 2026-11-04 — visualização Organic de custos
+- `web/app.js` agora exibe `costEstimate` opcional após a missão, discriminando líder/especialistas, moeda e indisponibilidade de valores incompletos. Renderização por `textContent` (sem HTML dinâmico).
+- Novo `tests/cost-ui-integration.test.js` cobre estaticamente a configuração exclusiva no servidor e o texto de estimativa, sem alegar teste funcional no navegador.
+- Commits `3d71789` e `4ad3cd8` na branch de desenvolvimento; main não editada.
+- **Testes e CI não executados/confirmados nesta rodada.** A configuração `STUDIO_PRICE_BOOK_JSON` requer testes HTTP com variáveis de ambiente e validação das tarifas antes de produção.
+- Próximo: executar `npm test` Node 22+, testar endpoint e UI reais, validar tabela de tarifas e segurança do histórico; Google Drive, desktop e APK pendentes.
