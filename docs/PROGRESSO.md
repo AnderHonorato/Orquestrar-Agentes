@@ -88,3 +88,12 @@ As tarefas recorrentes devem consultar o commit atual do GitHub antes de editar,
 - O backend dos provedores e APIs de aprovação segue inalterado. O sistema NÃO faz streaming individual; os estados são atualizados quando a requisição começa e quando a resposta completa chega.
 - BLOQUEIO DE PUBLICAÇÃO: Vercel retornou 402 payment_required / api-deployments-free-per-day (mais de 100 deployments por dia; aguardar janela de 24h ou rever plano pela conta, sem cobrança automática). A integração Git não disponibilizou um novo deployment READY para os commits 0164799/94d6002 na última consulta. O link estável do Vercel aponta para uma versão anterior. Não alegar que o novo Crew Studio já está disponível no site público.
 - PRÓXIMAS ETAPAS: publicar prévia do commit testado quando quota disponível, verificar desktop e Android por captura de tela, testar toques e estados animados em navegador real, corrigir bugs visuais. Manter a branch ander-flow/organic-orchestrator separada da main.
+
+
+### 04/11/2026 — verificação visual da nova versão no Vercel
+- Após o limite da API de deploy direto, o Git do Vercel publicou automaticamente o commit 7a91980 no deployment READY: https://orquestrar-organic-studio-fs4yfacx3-anderhonoratos-projects.vercel.app/.
+- O navegador externo renderizou o HTML com título Crew Studio e confirmou os quatro personagens, nomes e campos de modelo. Capturas verificadas em 390×844 (mobile) e 1440×900 (desktop): 2 colunas no mobile, 4 colunas no desktop, navegação inferior no mobile, navegação lateral no desktop.
+- GitHub Actions confirmou PASS no commit 7a91980 (workflow 41765015434).
+- O site está em modo de visualização, sem token e sem chaves de provedores. Não houve execução real de modelos.
+- Verificação automatizada de cliques com ferramenta Context.dev não pôde ser executada devido a restrição de assinatura (PAID_PLAN_REQUIRED, sem consumo de créditos). Não afirmar que interações reais foram navegadas automaticamente.
+- O alias de produção estável não foi intencionalmente atualizado neste lote; usar o URL único de preview acima para testar a nova versão. A verificação de movimento foi coberta por inspeção de CSS/JS e testes Node; não por gravação de vídeo.
