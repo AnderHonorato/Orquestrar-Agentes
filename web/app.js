@@ -327,6 +327,7 @@ async function runTeam() {
 
   try {
     const response = await fetch('/api/runs', {
+      signal: AbortSignal.timeout(120000),
       method:'POST', headers:authorization(), body:JSON.stringify({
         goal,
         provider:$('provider').value,
