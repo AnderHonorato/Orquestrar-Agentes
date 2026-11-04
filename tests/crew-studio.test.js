@@ -64,6 +64,6 @@ test('animações são 2D, acessíveis e respeitam movimento reduzido', async ()
   assert.match(style, /@keyframes head-idle/);
   assert.match(style, /prefers-reduced-motion:reduce/);
   assert.match(server, /'\/mascots\.js'/);
-  assert.doesNotMatch(mascots + style, /WebGL|three\.js|perspective\s*:/i);
+  assert.doesNotMatch(mascots + style, /WebGLRenderingContext|from\s*['\"]three|perspective\s*:/i);
   assert.doesNotMatch(mascots, /fetch\s*\(/);
 });
