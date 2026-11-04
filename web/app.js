@@ -292,6 +292,18 @@ function displayResult(result) {
     }
     $('output').append(panel);
   }
+  // Falhas do líder e dos especialistas devem permanecer visíveis no histórico.
+  if (Array.isArray(result.failures) && result.failures.length) {
+    const failuresPanel = element('section', undefined, 'card');
+    failuresPanel.setAttribute('aria-label', 'Falhas dos agentes');
+    failuresPanel.append(element('h3', 'Agentes que precisam de atenção'));
+    for (const failure of result.failures) {
+      const agentName = typeof failure.agent === 'string' ? failure.agent : 'Agente';
+      const reason = typeof failure.error === 'string' ? failure.error : 'Falha não detalhada.';
+      failuresPanel.append(element('p', agentName + ': ' + reason));
+    }
+    responses.append(failuresPanel);
+  }
   for (const item of result.results || []) {
     const details = element('details');
     details.append(element('summary', item.agent), element('pre', item.response));
