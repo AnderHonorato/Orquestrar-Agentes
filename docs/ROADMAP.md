@@ -96,3 +96,9 @@
 - **Verificação limitada:** clone/execução local indisponível por falha de resolução DNS de github.com no container. Teste adicionado, mas **não executado**; nenhuma aprovação de CI presumida.
 - Próximo: executar `npm test` em runner Node 22+, validar UI com uso parcial, tratar telemetria de falhas sem registrar segredos e implementar custo por tabela versionada apenas após verificar preços oficiais.
 - Drive não sincronizado.
+
+## Execução 2026-11-03 — contratos HTTP dos provedores
+- Adicionado `tests/provider-http-contract.test.js` com quatro testes de requisição simulada para Anthropic, Gemini e OpenAI, verificando autenticação, formato de payload, limite de saída e normalização de usage; cobre também resposta sem metadados.
+- Commit `28176db` na branch `ander-flow/organic-orchestrator`; main preservada. Os testes são mocks, **não comprovam compatibilidade real** com serviços externos.
+- Node 22.16.0 disponível no container, porém `git ls-remote` falhou por DNS (`Could not resolve host: github.com`); suíte completa ainda não executada. Verificar no runner CI antes de considerar o lote validado.
+- Próximo: executar `npm test`, corrigir qualquer falha, conferir contratos com APIs reais usando credenciais de teste e avaliar tokenização/custos por modelo. Google Drive ainda não sincronizado.
