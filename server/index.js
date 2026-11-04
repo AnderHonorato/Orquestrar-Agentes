@@ -18,6 +18,18 @@ const priceBook = (() => {
   if (!value || typeof value !== 'object' || Array.isArray(value)) {
     throw new Error('STUDIO_PRICE_BOOK_JSON deve ser um objeto');
   }
+  for (const [key, rates] of Object.entries(value)) {
+    let pair;
+    try { pair = JSON.parse(key); } catch { throw new Error('Chave de tarifa inválida'); }
+    if (!Array.isArray(pair) || pair.length !== 2 ||
+        pair.some(part => typeof part !== 'string' || !part.trim()) ||
+        !rates || typeof rates !== 'object' || Array.isArray(rates) ||
+        !['USD', 'BRL', 'EUR'].includes(rates.currency) ||
+        !Number.isFinite(rates.inputPerMillion) || rates.inputPerMillion < 0 ||
+        !Number.isFinite(rates.outputPerMillion) || rates.outputPerMillion < 0) {
+      throw new Error('Tarifa inválida para provedor/modelo');
+    }
+  }
   return value;
 })();
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
