@@ -186,3 +186,10 @@
 - Criado `tests/history-reopen.test.js` com teste estático da ligação do histórico ao painel. Commits `982a80d` e `7ad0ca2`.
 - Limitação: teste estático não substitui teste visual/navegador; histórico só contém dados efetivamente persistidos. Nenhuma integração Open Duet ou build Android/desktop foi realizada neste lote.
 - Próximo: confirmar CI deste HEAD, executar teste funcional no navegador, tratar histórico extenso com paginação, avaliar Open Duet por componentes/licença e sincronizar Drive.
+
+## Execução 2026-11-04 — identidade visual dos agentes
+- Commit `6323b80`: quatro acentos cromáticos, aura durante trabalho, microinterações individuais e tratamento de movimento reduzido no CSS, sem bibliotecas novas. A inspiração é o dinamismo de bots 2D, sem copiar personagens ou assets de terceiros.
+- Commit `a06cf91`: testes estáticos Node para personalidades, acessibilidade e reações visuais (`tests/mascots-visual.test.js`).
+- Evidência: arquivos e commits gravados na branch `ander-flow/organic-orchestrator`; `main` não alterada. **Testes e inspeção visual deste lote ainda não confirmados**.
+- Bloqueios: remodelagem completa dos SVGs, validação em navegador/celular, publicação da última versão, integração Open Duet, desktop/APK e backup Drive pendentes.
+- Próximo: executar CI, corrigir regressões, redesenhar SVGs 2D com formas mais distintas e validar deploy público por commit.
