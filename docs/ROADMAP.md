@@ -148,3 +148,10 @@
 - GitHub Actions: run `41772871276` do commit anterior `8203f78` concluído com **success**. Run `41778397855` para `a653707` estava **in_progress** no momento da consulta; ainda sem resultado confirmado para `b3519aa`.
 - Não foram feitos testes de API real, instalação desktop/APK, publicação web ou backup no Drive.
 - Próximo: verificar CI do HEAD, smoke test HTTP com tabela válida/inválida, testar painel no navegador, depois implementar empacotamento com licenças auditadas.
+
+
+## Execução 2026-11-04 — smoke HTTP de segurança
+- HEAD remoto conferido antes da escrita: `464ed38`; integração financeira e painel já existiam e não foram duplicados.
+- Criado `tests/http-cost-security.test.js` com servidor HTTP efêmero: valida `GET /api/health`, `GET /api/providers`, ausência de `priceBook` nessas respostas e rejeição 401 para `POST /api/runs` sem token.
+- Commit `c015f1d`, somente branch de desenvolvimento. **Teste ainda não executado nesta rodada**; precisa de CI Node 22 para confirmação. O teste não valida provedores reais nem o custo de uma execução autenticada.
+- Próximo: executar CI, adicionar teste HTTP autenticado com provedor simulado e tarifas fornecidas pelo operador; verificar UI no navegador. Drive, desktop, APK e integração Open Duet permanecem pendentes.
