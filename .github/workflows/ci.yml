@@ -31,3 +31,5 @@ jobs:
           node --check server/orchestrator.js
           node --check server/engine.js
           node --check web/app.js
+          node --check web/mascots.js
+          node --check web/approvals-ui.js

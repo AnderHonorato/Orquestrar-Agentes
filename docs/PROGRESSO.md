@@ -69,3 +69,12 @@ As tarefas recorrentes devem consultar o commit atual do GitHub antes de editar,
 - Criado `tests/call-budget.test.js` com quatro casos (padrão, insuficiência, entradas inválidas, mínimo). Arquivos gravados na branch `ander-flow/organic-orchestrator`, sem alteração na main.
 - **Ainda não confirmado:** resultado da CI e execução real dos testes deste lote. O controle limita número de requisições, NÃO tokens nem custo em reais; chamadas de APIs podem gerar cobrança mesmo dentro do limite.
 - Próximo: verificar Actions deste commit; expor seletor `maxModelCalls` na UI, limites de tokens/custo por provedor e cancelamento de chamadas; persistência e isolamento por usuário continuam pendentes.
+
+
+### 03/11/2026 — Crew Studio 2D (refatoração de interface)
+- Novo layout visual de uma cor de destaque, superfícies discretas e opções avançadas recolhidas; mantidas as cinco seções e fluxos do projeto.
+- Quatro mascotes SVG autorais (Atlas/Arquiteto, Pip/Implementador, Nox/Revisor e Lumi/Designer), cada qual com silhueta/personalidade/expressões próprias, olhos que seguem o ponteiro, piscadas e cabeça animada com CSS 2D.
+- Emoções UI sincronizadas aos estados de rede: o botão inicia working enquanto POST /api/runs está pendente, marca done apenas após resposta com resultado para o especialista, e error quando há falha. Frases são mensagens da interface, não falas reais de modelos. Não simular streaming nem execução de ferramentas.
+- Toque/click no retrato produz reação curta, sem chamar APIs; navegação e preferências de acessibilidade preservadas.
+- CI estendida para validar a sintaxe de web/mascots.js e approvals-ui.js; testes de 2D, estados, campos, APIs, redução de movimento e roteamento estático no servidor Node.
+- Não foi copiado código do Open Duet nesta etapa. Nenhum recurso 3D foi incorporado.

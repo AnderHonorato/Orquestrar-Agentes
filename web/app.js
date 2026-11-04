@@ -1,105 +1,147 @@
 import { library, categories } from './catalog.js';
+import { personalities, createPortrait, setAgentMood } from './mascots.js';
+
 const $ = id => document.getElementById(id);
 let agents = [];
-let modelProviders = [];
-function element(tag, text, cls) {
+let providers = [];
+let running = false;
+const pages = {
+  studio:'ESTÚDIO / EQUIPE',
+  approvals:'ESTÚDIO / APROVAÇÕES',
+  history:'ESTÚDIO / HISTÓRICO',
+  tools:'ESTÚDIO / BIBLIOTECA',
+  settings:'ESTÚDIO / MODELOS'
+};
+const element = (tag, text, className) => {
   const node = document.createElement(tag);
   if (text !== undefined) node.textContent = text;
-  if (cls) node.className = cls;
+  if (className) node.className = className;
   return node;
-}
-const apiHeaders = () => ({ 'content-type': 'application/json', 'x-studio-token': sessionStorage.getItem('studio-key') || '' });
+};
+const authorization = () => ({ 'content-type':'application/json', 'x-studio-token':sessionStorage.getItem('studio-key') || '' });
+
 function selectView(name) {
-  document.querySelectorAll('.view').forEach(view => view.hidden = view.id !== name);
-  document.querySelectorAll('nav button[data-view]').forEach(button => button.classList.toggle('active', button.dataset.view === name));
+  if (!Object.hasOwn(pages, name)) return;
+  document.querySelectorAll('.view').forEach(view => { view.hidden = view.id !== name; });
+  document.querySelectorAll('nav button[data-view]').forEach(button => {
+    const active = button.dataset.view === name;
+    button.classList.toggle('active', active);
+    if (active) button.setAttribute('aria-current', 'page');
+    else button.removeAttribute('aria-current');
+  });
+  $('page-name').textContent = pages[name];
   if (name === 'history') loadHistory();
 }
-document.querySelectorAll('nav button[data-view]').forEach(button => button.addEventListener('click', () => selectView(button.dataset.view)));
+
+function buildTheme() {
+  const button = element('button', '◐ Tema', 'theme-toggle');
+  button.type = 'button';
+  button.setAttribute('aria-label', 'Alternar tema claro e escuro');
+  let theme;
+  try { theme = localStorage.getItem('organic-theme'); } catch { /* Navegador restrito */ }
+  const apply = value => {
+    document.documentElement.dataset.theme = value;
+    try { localStorage.setItem('organic-theme', value); } catch { /* Preferência local opcional */ }
+  };
+  apply(theme === 'light' ? 'light' : 'dark');
+  button.addEventListener('click', () => apply(document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark'));
+  document.querySelector('.top-actions').append(button);
+}
+
 function buildAccess() {
-  const settings = $('providers-list').parentElement;
   const access = element('div', undefined, 'card access-card');
-  const title = element('h2', 'Acesso protegido');
-  const description = element('p', 'O código libera o backend. Chaves de modelos ficam somente no servidor.', 'hint');
+  access.append(
+    element('h2', 'Código de acesso'),
+    element('p', 'Autoriza execuções. As chaves dos modelos continuam no servidor.')
+  );
   const input = element('input');
   input.type = 'password';
   input.autocomplete = 'off';
-  input.placeholder = 'Código de acesso do servidor';
-  input.setAttribute('aria-label', 'Código de acesso');
+  input.placeholder = 'Código do servidor';
+  input.setAttribute('aria-label', 'Código de acesso ao servidor');
   input.value = sessionStorage.getItem('studio-key') || '';
-  const button = element('button', 'Verificar acesso', 'primary');
-  const message = element('p', 'Sem acesso verificado.', 'hint');
-  button.addEventListener('click', async () => {
+  const verify = element('button', 'Verificar acesso', 'primary');
+  verify.type = 'button';
+  const forget = element('button', 'Esquecer código', 'secondary');
+  forget.type = 'button';
+  const message = element('p', 'Nenhum acesso verificado.', 'hint');
+  message.setAttribute('role', 'status');
+  verify.addEventListener('click', async () => {
     const token = input.value.trim();
     if (token.length > 512) { message.textContent = 'Código longo demais.'; return; }
+    verify.disabled = true;
     try {
-      const response = await fetch('/api/history', { headers: { 'x-studio-token': token } });
-      if (!response.ok) throw Error('Código incorreto ou proteção ainda não configurada.');
+      const response = await fetch('/api/history', { headers:{ 'x-studio-token': token } });
+      if (!response.ok) throw Error('Código inválido ou acesso não configurado.');
       sessionStorage.setItem('studio-key', token);
-      message.textContent = 'Acesso autorizado nesta sessão do navegador.';
-    } catch (error) { message.textContent = error.message; }
+      message.textContent = 'Acesso liberado nesta sessão.';
+    } catch (error) {
+      message.textContent = error.message;
+    } finally {
+      verify.disabled = false;
+    }
   });
-  const clear = element('button', 'Esquecer código', 'secondary');
-  clear.addEventListener('click', () => {
+  forget.addEventListener('click', () => {
     sessionStorage.removeItem('studio-key');
     input.value = '';
-    message.textContent = 'Código apagado desta sessão.';
+    message.textContent = 'Código descartado desta sessão.';
   });
-  access.append(title, description, input, button, clear, message);
-  settings.insertBefore(access, $('providers-list'));
+  access.append(input, verify, forget, message);
+  $('settings').querySelector('.settings-content').insertBefore(access, $('providers-list'));
 }
+
 function buildLibrary() {
-  const mount = document.querySelector('#tools .card');
+  const mount = $('library');
   mount.replaceChildren();
-  mount.append(element('h2', 'Biblioteca de ferramentas e skills'));
-  mount.append(element('p', 'Referências dos cinco posts do X. Nenhuma destas ferramentas é instalada automaticamente; confira licença, requisitos e segurança antes de habilitar.', 'hint'));
+  mount.append(
+    element('h2', 'Explorar recursos'),
+    element('p', 'Referências dos cinco posts. Não são ferramentas instaladas; confirme licença e segurança antes de integrar.')
+  );
   const controls = element('div', undefined, 'library-controls');
   const search = element('input');
   search.type = 'search';
-  search.placeholder = 'Pesquisar projeto ou utilidade...';
-  search.setAttribute('aria-label', 'Pesquisar recursos');
+  search.placeholder = 'Pesquisar ferramenta';
+  search.setAttribute('aria-label', 'Pesquisar biblioteca');
   const filter = element('select');
-  filter.setAttribute('aria-label', 'Filtrar categoria');
+  filter.setAttribute('aria-label', 'Filtrar biblioteca');
   const all = element('option', 'Todas as áreas');
   all.value = '';
   filter.append(all);
-  categories.forEach(category => { const option = element('option', category); option.value = category; filter.append(option); });
+  categories.forEach(category => {
+    const option = element('option', category);
+    option.value = category;
+    filter.append(option);
+  });
   controls.append(search, filter);
   const count = element('p', '', 'hint');
-  const rows = element('div', undefined, 'library-grid');
-  function render() {
+  const cards = element('div', undefined, 'library-grid');
+  function refresh() {
     const query = search.value.toLocaleLowerCase('pt-BR');
-    const subset = library.filter(item => (!filter.value || item.categories.includes(filter.value)) && (item.repository + ' ' + item.description + ' ' + item.categories.join(' ')).toLocaleLowerCase('pt-BR').includes(query));
-    count.textContent = subset.length + ' referências encontradas · ' + library.length + ' projetos únicos';
-    rows.replaceChildren();
-    subset.forEach(item => {
+    const found = library.filter(item => {
+      return (!filter.value || item.categories.includes(filter.value)) &&
+        (item.repository + ' ' + item.description + ' ' + item.categories.join(' ')).toLocaleLowerCase('pt-BR').includes(query);
+    });
+    count.textContent = found.length + ' de ' + library.length + ' referências';
+    cards.replaceChildren();
+    found.forEach(item => {
       const card = element('article', undefined, 'library-card');
-      card.append(element('small', item.categories.join(' / ')));
-      card.append(element('h3', item.name));
-      card.append(element('p', item.description));
-      const link = element('a', 'Ver repositório ↗');
+      card.append(
+        element('small', item.categories.join(' / ')),
+        element('h3', item.name),
+        element('p', item.description)
+      );
+      const link = element('a', 'Ver no GitHub ↗');
       link.href = item.url;
       link.target = '_blank';
       link.rel = 'noopener noreferrer';
       card.append(link);
-      rows.append(card);
+      cards.append(card);
     });
   }
-  search.addEventListener('input', render);
-  filter.addEventListener('change', render);
-  mount.append(controls, count, rows);
-  render();
-}
-function buildTheme() {
-  const button = element('button', '◐ Tema', 'theme-toggle');
-  button.type = 'button';
-  button.setAttribute('aria-label', 'Alternar tema claro ou escuro');
-  const apply = name => {
-    document.documentElement.dataset.theme = name;
-    localStorage.setItem('organic-theme', name);
-  };
-  apply(localStorage.getItem('organic-theme') === 'dark' ? 'dark' : 'light');
-  button.addEventListener('click', () => apply(document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark'));
-  document.querySelector('aside').append(button);
+  search.addEventListener('input', refresh);
+  filter.addEventListener('change', refresh);
+  mount.append(controls, count, cards);
+  refresh();
 }
 
 function modelChoice(id, emptyLabel) {
@@ -108,126 +150,242 @@ function modelChoice(id, emptyLabel) {
   const inherit = element('option', emptyLabel);
   inherit.value = '';
   select.append(inherit);
-  modelProviders.forEach(provider => {
-    const option = element('option', provider.id + (provider.ready ? '' : ' · configurar'));
+  providers.forEach(provider => {
+    const option = element('option', provider.id + (provider.ready ? '' : ' · sem chave'));
     option.value = provider.id;
     select.append(option);
   });
   return select;
 }
-function buildAdvancedAgent(row, index) {
-  const details = element('details', undefined, 'agent-config');
-  const summary = element('summary', 'Modelo individual (opcional)');
-  const providerLabel = element('label', 'Provedor deste especialista');
-  const provider = modelChoice('agent-provider-' + index, 'Usar o provedor principal');
-  provider.dataset.agentProvider = index;
-  const modelLabel = element('label', 'Nome do modelo');
-  const model = element('input');
-  model.dataset.agentModel = index;
-  model.placeholder = 'Herdar o modelo principal';
-  model.setAttribute('aria-label', 'Modelo do especialista ' + index);
-  details.append(summary, providerLabel, provider, modelLabel, model);
-  row.append(details);
-}
+
 function buildLeader() {
-  const fields = document.querySelector('#studio .fields');
-  const wrapper = element('div');
-  const label = element('label', 'Provedor do líder');
-  const provider = modelChoice('leader-provider', 'Usar o provedor principal');
-  const modelLabel = element('label', 'Modelo do líder (opcional)');
+  const slot = $('leader-config');
+  slot.replaceChildren();
+  const fields = element('div', undefined, 'fields');
+  const providerCell = element('div');
+  const providerLabel = element('label', 'Provedor do líder');
+  providerLabel.htmlFor = 'leader-provider';
+  providerCell.append(providerLabel, modelChoice('leader-provider', 'Usar o principal'));
+  const modelCell = element('div');
+  const modelLabel = element('label', 'Modelo do líder');
+  modelLabel.htmlFor = 'leader-model';
   const model = element('input');
   model.id = 'leader-model';
-  model.placeholder = 'Herdar o modelo principal';
-  wrapper.append(label, provider, modelLabel, model);
-  fields.append(wrapper);
+  model.placeholder = 'Automático';
+  modelCell.append(modelLabel, model);
+  fields.append(providerCell, modelCell);
+  slot.append(fields);
 }
 
-async function init() {
-  buildAccess();
-  buildLibrary();
-  buildTheme();
-  try {
-    const response = await fetch('/api/providers');
-    if (!response.ok) throw Error('Servidor indisponível.');
-    const data = await response.json();
-    agents = data.agents;
-    modelProviders = data.providers;
-    buildLeader();
-    $('notice').textContent = data.mode === 'somente-leitura' ? 'Servidor em modo somente leitura; configure STUDIO_ACCESS_TOKEN.' : 'Execuções exigem seu código de acesso e credenciais do modelo no servidor.';
-    for (const provider of data.providers) {
-      const option = element('option', provider.id + (provider.ready ? ' · configurado' : ' · sem chave'));
-      option.value = provider.id;
-      $('provider').append(option);
-      const row = element('div', undefined, 'provider');
-      row.append(element('strong', provider.id), element('span', provider.ready ? 'Configurado' : 'Configuração necessária', provider.ready ? 'ready' : 'missing'));
-      $('providers-list').append(row);
-    }
-    agents.forEach((agent, index) => {
-      const row = element('div', undefined, 'agent');
-      const icon = element('span', ['✧','⌘','◇','◈'][index % 4], 'agent-icon');
-      const info = element('div');
-      info.append(element('strong', agent.name), element('p', agent.role));
-      const check = element('input');
-      check.type = 'checkbox';
-      check.checked = true;
-      check.dataset.index = index;
-      check.setAttribute('aria-label', 'Ativar ' + agent.name);
-      row.append(icon, info, check);
-      buildAdvancedAgent(row,index);
-      $('agents').append(row);
-    });
-  } catch (error) { $('notice').textContent = error.message; }
+function buildAgentConfiguration(index) {
+  const details = element('details', undefined, 'agent-config');
+  details.append(element('summary', 'Ajustar modelo'));
+  const modelLabel = element('label', 'Provedor');
+  modelLabel.htmlFor = 'agent-provider-' + index;
+  const modelChoiceControl = modelChoice('agent-provider-' + index, 'Herdar principal');
+  modelChoiceControl.dataset.agentProvider = index;
+  const nameLabel = element('label', 'Nome do modelo');
+  nameLabel.htmlFor = 'agent-model-' + index;
+  const modelInput = element('input');
+  modelInput.id = 'agent-model-' + index;
+  modelInput.dataset.agentModel = index;
+  modelInput.placeholder = 'Automático';
+  details.append(modelLabel, modelChoiceControl, nameLabel, modelInput);
+  return details;
 }
-$('run').addEventListener('click', async () => {
+
+function buildAgentCard(agent, index) {
+  const person = personalities[index % personalities.length];
+  const card = element('article', undefined, 'agent');
+  card.dataset.index = index;
+  card.dataset.mood = 'idle';
+
+  const top = element('div', undefined, 'agent-top');
+  const num = element('span', String(index + 1).padStart(2, '0'), 'agent-id');
+  const state = element('span', 'Disponível', 'agent-state');
+  top.append(num, state);
+
+  const portrait = createPortrait(index, person.nickname);
+  portrait.addEventListener('click', () => {
+    if (running || card.getAttribute('aria-disabled') === 'true') return;
+    setAgentMood(card, 'playful', index);
+    window.setTimeout(() => {
+      if (!running && card.dataset.mood === 'playful') setAgentMood(card, 'idle', index);
+    }, 1400);
+  });
+
+  const meta = element('div', undefined, 'agent-details');
+  const info = element('div');
+  info.append(element('div', person.nickname, 'agent-name'), element('p', agent.name, 'agent-personality'));
+  const toggle = element('label', undefined, 'agent-toggle');
+  const checkbox = element('input');
+  checkbox.type = 'checkbox';
+  checkbox.dataset.index = index;
+  checkbox.checked = true;
+  checkbox.setAttribute('aria-label', 'Ativar ' + agent.name);
+  const activeLabel = element('span', 'Ativo');
+  checkbox.addEventListener('change', () => {
+    card.setAttribute('aria-disabled', String(!checkbox.checked));
+    if (!running) setAgentMood(card, 'idle', index, checkbox.checked ? undefined : 'Em pausa');
+  });
+  toggle.append(checkbox, activeLabel);
+  meta.append(info, toggle);
+
+  card.append(top, portrait, meta, buildAgentConfiguration(index));
+  setAgentMood(card, 'idle', index);
+  return card;
+}
+
+function setTeamState(text) {
+  $('team-state').textContent = text;
+}
+function agentCard(index) {
+  return document.querySelector('.agent[data-index="' + index + '"]');
+}
+function selectedAgents() {
+  return agents.map((agent, index) => {
+    const enabled = document.querySelector('input[data-index="' + index + '"]')?.checked;
+    const provider = document.querySelector('[data-agent-provider="' + index + '"]')?.value;
+    const model = document.querySelector('[data-agent-model="' + index + '"]')?.value.trim();
+    return enabled ? { index, data:{
+      ...agent,
+      ...(provider ? { provider } : {}),
+      ...(model ? { model } : {})
+    } } : null;
+  }).filter(Boolean);
+}
+
+function displayResult(result) {
+  $('output').hidden = false;
+  $('result').textContent = result.summary || 'Nenhum resumo recebido.';
+  const responses = $('agent-responses');
+  responses.replaceChildren();
+  for (const item of result.results || []) {
+    const details = element('details');
+    details.append(element('summary', item.agent), element('pre', item.response));
+    responses.append(details);
+  }
+}
+
+async function runTeam() {
+  if (running) return;
   const goal = $('goal').value.trim();
-  if (!goal) { $('notice').textContent = 'Descreva um objetivo.'; return; }
-  const selected = agents.map((agent, index) => ({
-    ...agent,
-    ...(document.querySelector('[data-agent-provider="' + index + '"]')?.value ? {provider: document.querySelector('[data-agent-provider="' + index + '"]').value} : {}),
-    ...(document.querySelector('[data-agent-model="' + index + '"]')?.value.trim() ? {model: document.querySelector('[data-agent-model="' + index + '"]').value.trim()} : {}),
-    enabled: Boolean(document.querySelector('[data-index="' + index + '"]')?.checked)
-  })).filter(agent => agent.enabled).map(({enabled, ...agent}) => agent);
-  if (!selected.length) { $('notice').textContent = 'Selecione ao menos um agente.'; return; }
+  if (!goal) { $('notice').textContent = 'Descreva sua missão primeiro.'; $('goal').focus(); return; }
+  const picked = selectedAgents();
+  if (!picked.length) { $('notice').textContent = 'Ative pelo menos um agente.'; return; }
+  running = true;
   const button = $('run');
   button.disabled = true;
-  button.textContent = 'Equipe trabalhando…';
+  button.textContent = 'Equipe pensando…';
+  setTeamState('Trabalhando');
+  $('notice').textContent = 'Consultando os modelos configurados. Isso pode levar um momento.';
+  for (const item of picked) setAgentMood(agentCard(item.index), 'working', item.index);
+
   try {
-    const response = await fetch('/api/runs', { method: 'POST', headers: apiHeaders(), body: JSON.stringify({ goal, provider: $('provider').value, model: $('model').value.trim() || undefined, agents: selected, leaderProvider: $('leader-provider')?.value || undefined, leaderModel: $('leader-model')?.value.trim() || undefined }) });
+    const response = await fetch('/api/runs', {
+      method:'POST', headers:authorization(), body:JSON.stringify({
+        goal,
+        provider:$('provider').value,
+        model:$('model').value.trim() || undefined,
+        agents:picked.map(item => item.data),
+        leaderProvider:$('leader-provider')?.value || undefined,
+        leaderModel:$('leader-model')?.value.trim() || undefined
+      })
+    });
     const data = await response.json();
-    if (!response.ok) throw Error(data.error || 'Falha na execução.');
+    if (!response.ok) throw Error(data.error || 'Não foi possível executar a missão.');
     rememberLocal(data);
-    $('output').hidden = false;
-    $('result').textContent = data.summary;
-    const output = $('output');
-    output.querySelectorAll('details').forEach(node => node.remove());
-    for (const item of data.results || []) {
-      const details = element('details');
-      details.append(element('summary', item.agent), element('pre', item.response));
-      output.append(details);
+    displayResult(data);
+    const concluded = new Set((data.results || []).map(item => item.agent));
+    const broken = new Set((data.failures || []).map(item => item.agent));
+    for (const item of picked) {
+      const mood = concluded.has(item.data.name) ? 'done' : broken.has(item.data.name) ? 'error' : 'idle';
+      setAgentMood(agentCard(item.index), mood, item.index);
     }
-    $('notice').textContent = data.status === 'completed' ? 'Concluído. Revise antes de aplicar.' : 'Parcial: ' + (data.failures || []).map(error => error.agent + ': ' + error.error).join('; ');
-  } catch (error) { $('notice').textContent = 'Erro: ' + error.message; }
-  finally { button.disabled = false; button.textContent = 'Iniciar orquestração ↗'; }
-});
+    const complete = data.status === 'completed';
+    setTeamState(complete ? 'Missão concluída' : 'Revisão necessária');
+    $('notice').textContent = complete ? 'Pronto! Confira as contribuições abaixo.' :
+      'Resultado parcial. Alguns modelos não concluíram; confira os detalhes.';
+  } catch (error) {
+    for (const item of picked) setAgentMood(agentCard(item.index), 'error', item.index);
+    setTeamState('Precisa de atenção');
+    $('notice').textContent = 'Não foi possível concluir: ' + String(error.message || error);
+  } finally {
+    running = false;
+    button.disabled = false;
+    button.replaceChildren(document.createTextNode('Enviar missão '), element('span', '↗'));
+  }
+}
+
+function rememberLocal(entry) {
+  try {
+    const entries = JSON.parse(sessionStorage.getItem('organic-runs') || '[]');
+    sessionStorage.setItem('organic-runs', JSON.stringify([entry, ...entries].slice(0, 20)));
+  } catch { /* Histórico opcional na sessão */ }
+}
+
 async function loadHistory() {
   const node = $('history-items');
   node.textContent = 'Carregando…';
   try {
-    const response = await fetch('/api/history', { headers: { 'x-studio-token': sessionStorage.getItem('studio-key') || '' } });
+    const response = await fetch('/api/history', { headers:{ 'x-studio-token':sessionStorage.getItem('studio-key') || '' } });
     const data = await response.json();
     if (!response.ok) throw Error(data.error || 'Acesso não autorizado.');
-    if (data.storage === 'browser') { try { data.items = JSON.parse(sessionStorage.getItem('organic-runs') || '[]'); } catch { data.items = []; } }
+    if (data.storage === 'browser') {
+      try { data.items = JSON.parse(sessionStorage.getItem('organic-runs') || '[]'); }
+      catch { data.items = []; }
+    }
     node.replaceChildren();
-    if (!data.items.length) node.append(element('p', 'Sem execuções.'));
-    data.items.forEach(item => {
+    if (!data.items.length) node.append(element('p', 'Nenhuma missão registrada.'));
+    for (const item of data.items) {
       const details = element('details');
-      details.append(element('summary', item.goal + ' · ' + new Date(item.createdAt).toLocaleString('pt-BR')), element('pre', item.summary));
+      details.append(element('summary', item.goal + ' · ' + new Date(item.createdAt).toLocaleString('pt-BR')), element('pre', item.summary || ''));
       node.append(details);
-    });
+    }
   } catch (error) { node.textContent = error.message; }
 }
-init();
 
-function rememberLocal(entry) {
-  try { const entries=JSON.parse(sessionStorage.getItem('organic-runs') || '[]'); sessionStorage.setItem('organic-runs',JSON.stringify([entry,...entries].slice(0,20))); } catch { /* histórico opcional */ }
+async function initialize() {
+  document.querySelectorAll('nav button[data-view]').forEach(button => {
+    button.addEventListener('click', () => selectView(button.dataset.view));
+  });
+  buildTheme();
+  buildAccess();
+  buildLibrary();
+  $('run').addEventListener('click', runTeam);
+  selectView('studio');
+  try {
+    const response = await fetch('/api/providers');
+    if (!response.ok) throw Error('Motor de modelos indisponível.');
+    const data = await response.json();
+    agents = data.agents || [];
+    providers = data.providers || [];
+    buildLeader();
+    const available = providers.some(provider => provider.ready);
+    const indicator = $('server-indicator');
+    indicator.replaceChildren(element('span', undefined, 'tiny-dot'), document.createTextNode(
+      available ? 'Modelos configurados' : 'Modo de visualização'
+    ));
+    if (!available) indicator.classList.add('offline');
+    $('notice').textContent = data.mode === 'somente-leitura' ?
+      'Prévia visual. Para executar, configure o código em Modelos.' :
+      'Equipe pronta. Você decide quando executar.';
+    $('provider').replaceChildren();
+    $('providers-list').replaceChildren();
+    for (const provider of providers) {
+      const option = element('option', provider.id + (provider.ready ? '' : ' · sem chave'));
+      option.value = provider.id;
+      $('provider').append(option);
+      const row = element('div', undefined, 'provider');
+      row.append(element('strong', provider.id), element('span', provider.ready ? 'Configurado' : 'Sem credencial', provider.ready ? 'ready' : 'missing'));
+      $('providers-list').append(row);
+    }
+    $('agents').replaceChildren(...agents.map(buildAgentCard));
+    setTeamState(agents.length + ' agentes disponíveis');
+  } catch (error) {
+    $('server-indicator').textContent = 'Servidor indisponível';
+    $('notice').textContent = error.message;
+    setTeamState('Conexão indisponível');
+  }
 }
+initialize();

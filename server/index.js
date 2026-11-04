@@ -16,6 +16,7 @@ const assets = {
   '/styles.css': ['styles.css', 'text/css; charset=utf-8'],
   '/app.js': ['app.js', 'text/javascript; charset=utf-8'],
   '/approvals-ui.js': ['approvals-ui.js', 'text/javascript; charset=utf-8'],
+  '/mascots.js': ['mascots.js', 'text/javascript; charset=utf-8'],
   '/catalog.js': ['catalog.js', 'text/javascript; charset=utf-8'],
   '/icon.svg': ['icon.svg', 'image/svg+xml'],
   '/manifest.webmanifest': ['manifest.webmanifest', 'application/manifest+json']
