@@ -37,3 +37,28 @@ test('não calcula consumo sem telemetria', () => {
   assert.equal(result.complete, false);
   assert.equal(result.amount, null);
 });
+
+test('subtotal conhecido não vira total quando uma tarifa falta', () => {
+  const partialBook = { [JSON.stringify(['openai', 'modelo-a'])]: book[JSON.stringify(['openai', 'modelo-a'])] };
+  const result = estimateRunCosts(run, partialBook);
+  assert.equal(result.complete, false);
+  assert.equal(result.amount, null);
+  assert.equal(result.knownSubtotal, 2);
+  assert.equal(result.knownItems, 1);
+  assert.equal(result.totalItems, 2);
+  assert.equal(result.billed, false);
+});
+test('subtotal não soma moedas diferentes', () => {
+  const mixed = structuredClone(book);
+  mixed[JSON.stringify(['anthropic', 'modelo-b'])].currency = 'EUR';
+  const result = estimateRunCosts(run, mixed);
+  assert.equal(result.knownSubtotal, null);
+  assert.equal(result.amount, null);
+  assert.equal(result.reason, 'mixed_currencies');
+});
+test('sem tarifas não existe subtotal conhecido', () => {
+  const result = estimateRunCosts(run, {});
+  assert.equal(result.knownSubtotal, null);
+  assert.equal(result.knownItems, 0);
+  assert.equal(result.totalItems, 2);
+});
