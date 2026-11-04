@@ -211,3 +211,8 @@
 - Teste estático `tests/organic-failures.test.js` adicionado. CI Node 22 e teste visual deste lote ainda não confirmados.
 - Deploy READY anterior observado para `d30af59` na Vercel; não comprova acesso público nem implantação destes commits.
 - Próximo: confirmar CI e testar fluxo de falha em navegador; persistência e aprovação de efeitos externos, adaptação Open Duet, desktop/APK e Drive seguem pendentes.
+
+## Execução 2026-11-04 — limite de espera no navegador
+- `web/app.js`: chamada de execução de missão passa a ter `AbortSignal.timeout(120000)` para evitar espera indefinida do navegador.
+- Commit: `76e2eb1`. A execução no servidor pode continuar após o timeout; isso NÃO é cancelamento remoto nem garantia de não cobrança.
+- CI, compatibilidade de navegador e deploy deste commit ainda não verificados. Próximo: implementar cancelamento real com ID de execução, estado persistido e testes de integração.
