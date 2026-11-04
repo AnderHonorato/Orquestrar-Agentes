@@ -205,3 +205,9 @@
 - Commits `58118e7`, `217e881` e `d30af59`: olhos SVG com classes próprias, formatos por personalidade e expressões de erro/conclusão; teste estático `tests/organic-eyes.test.js` sem novas dependências.
 - Teste automatizado e renderização visual **ainda não executados/confirmados**; verificar CI Node 22 e aparência no celular, incluindo movimento reduzido. Nenhum recurso externo foi integrado.
 - Próximo lote: teste real em navegador, aprovação humana para ações externas, auditoria de licença e compatibilidade do Open Duet. Desktop/APK e backup Drive pendentes.
+
+## 2026-11-04 — falhas visíveis no histórico Organic
+- Commits `d884851` e `e2cc1ca`: `displayResult` agora mostra falhas de agentes/líder, inclusive ao reabrir resultados históricos, sem reexecutar modelos. Mensagens inseridas com `textContent` por meio de `element`, sem interpretar HTML.
+- Teste estático `tests/organic-failures.test.js` adicionado. CI Node 22 e teste visual deste lote ainda não confirmados.
+- Deploy READY anterior observado para `d30af59` na Vercel; não comprova acesso público nem implantação destes commits.
+- Próximo: confirmar CI e testar fluxo de falha em navegador; persistência e aprovação de efeitos externos, adaptação Open Duet, desktop/APK e Drive seguem pendentes.
