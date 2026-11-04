@@ -40,6 +40,12 @@ function svgPortrait(index) {
     '<g class="head">' + character.ornament +
     '<path d="' + character.head + '" fill="var(--face)" stroke="#272d24" stroke-width="5.5" stroke-linejoin="round"/>' +
     character.adorn +
+    // Cada agente possui um detalhe próprio, sem dependência de assets externos.
+    '<g class="agent-signature" fill="none" stroke="var(--agent-glow,#9db8ff)" stroke-width="5" stroke-linecap="round">' +
+    ['<path d="M105 57 L120 42 L135 57"/>',
+     '<path d="M106 59 Q120 39 134 59"/><circle cx="120" cy="34" r="5" fill="var(--agent-glow,#9db8ff)" stroke="none"/>',
+     '<path d="M101 62 L120 50 L139 62"/><path d="M112 43 L128 43"/>',
+     '<path d="M96 60 Q120 30 144 60"/><path d="M108 48 L132 48"/>'][index % 4] + '</g>' +
     '<g class="eyebrow" fill="none" stroke="#272d24" stroke-width="4.2" stroke-linecap="round"><path d="' + character.brows + '"/></g>' +
     '<g class="eye-lids"><ellipse cx="87" cy="110" rx="13" ry="17" fill="#262c24"/>' +
     '<ellipse cx="154" cy="110" rx="13" ry="17" fill="#262c24"/>' +
