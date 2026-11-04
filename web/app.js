@@ -372,6 +372,14 @@ async function loadHistory() {
     for (const item of data.items) {
       const details = element('details');
       details.append(element('summary', item.goal + ' · ' + new Date(item.createdAt).toLocaleString('pt-BR')), element('pre', item.summary || ''));
+      const replay = element('button', 'Reabrir resultado', 'secondary');
+      replay.type = 'button';
+      replay.addEventListener('click', () => {
+        displayResult(item);
+        selectView('studio');
+        $('output').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+      details.append(replay);
       node.append(details);
     }
   } catch (error) { node.textContent = error.message; }
