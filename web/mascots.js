@@ -47,8 +47,8 @@ function svgPortrait(index) {
      '<path d="M101 62 L120 50 L139 62"/><path d="M112 43 L128 43"/>',
      '<path d="M96 60 Q120 30 144 60"/><path d="M108 48 L132 48"/>'][index % 4] + '</g>' +
     '<g class="eyebrow" fill="none" stroke="#272d24" stroke-width="4.2" stroke-linecap="round"><path d="' + character.brows + '"/></g>' +
-    '<g class="eye-lids"><ellipse cx="87" cy="110" rx="13" ry="17" fill="#262c24"/>' +
-    '<ellipse cx="154" cy="110" rx="13" ry="17" fill="#262c24"/>' +
+    '<g class="eye-lids"><ellipse class="eye eye-left" cx="87" cy="110" rx="13" ry="17" fill="#262c24"/>' +
+    '<ellipse class="eye eye-right" cx="154" cy="110" rx="13" ry="17" fill="#262c24"/>' +
     '<g class="pupils"><circle cx="91" cy="104" r="4" fill="#f9f7eb"/><circle cx="158" cy="104" r="4" fill="#f9f7eb"/></g></g>' +
     '<g fill="none" stroke="#272d24" stroke-width="4" stroke-linecap="round">' +
     '<path class="mouth-idle" d="M110 149 Q120 157 132 149"/>' +
