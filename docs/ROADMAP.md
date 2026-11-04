@@ -178,3 +178,11 @@
 - Commits `149bdc1` e `cd2d09b`; `main` preservada.
 - CI do novo lote ainda não confirmada; testar `npm test` no Node 22 e smoke test visual com casos de moedas diferentes e ausência de tarifa.
 - Pendente: adaptação Open Duet com revisão Apache-2.0, builds desktop/APK e backup na pasta do Drive.
+
+
+## Execução 2026-11-04 — reabrir resultados do histórico
+- HEAD remoto inicial conferido: `e5579dcdcb56b0655e0ed459286fbcf4b3970f47`. GitHub Actions para esse SHA: `completed/success` (run 41806418794).
+- Adicionado botão **Reabrir resultado** aos itens do histórico Organic; reutiliza `displayResult(item)` para mostrar resumo, respostas dos especialistas, custos completos ou subtotais parciais já salvos, sem nova chamada de modelo.
+- Criado `tests/history-reopen.test.js` com teste estático da ligação do histórico ao painel. Commits `982a80d` e `7ad0ca2`.
+- Limitação: teste estático não substitui teste visual/navegador; histórico só contém dados efetivamente persistidos. Nenhuma integração Open Duet ou build Android/desktop foi realizada neste lote.
+- Próximo: confirmar CI deste HEAD, executar teste funcional no navegador, tratar histórico extenso com paginação, avaliar Open Duet por componentes/licença e sincronizar Drive.
