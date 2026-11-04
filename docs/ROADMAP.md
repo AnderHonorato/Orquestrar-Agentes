@@ -162,3 +162,10 @@
 - Teste isola `DATA_DIR` temporário e restaura variáveis de ambiente/fetch. Respostas dos provedores são simuladas, não representam API real ou cobrança.
 - **Teste novo ainda não confirmado pela CI**; verificar execução do commit e corrigir falhas se houver. `main` não editada. Drive, Open Duet, builds desktop/APK continuam pendentes.
 - Próximo: confirmar CI, adicionar caso HTTP de uso incompleto/tarifa ausente, validar UI no navegador e iniciar auditoria de compatibilidade/licenças do Open Duet.
+
+## Execução 2026-11-04 — subtotais de custo incompleto
+- CI anterior verificada no GitHub: commit `5fac556` com conclusão `success` (antes deste lote).
+- `server/run-costs.js` passa a retornar `knownSubtotal`, `knownItems` e `totalItems` para informar custos parciais com tarifas e telemetria conhecidas. `amount` continua `null` quando o total é incompleto; subtotal também é `null` se houver moedas diferentes.
+- Três testes de regressão adicionados em `tests/run-costs.test.js`, cobrindo ausência de tarifa, moedas incompatíveis e nenhuma tarifa.
+- Commits de código/teste: `de07121` e `3653a11`. Não foi verificada a CI deste novo lote nesta execução.
+- Próximo: confirmar CI, integrar subtotal com indicação explícita de parcialidade na interface, validar comportamento em navegador e avançar na adaptação do Open Duet com auditoria de licença. Google Drive, desktop e APK ainda pendentes.
