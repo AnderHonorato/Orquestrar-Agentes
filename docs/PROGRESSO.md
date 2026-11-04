@@ -78,3 +78,13 @@ As tarefas recorrentes devem consultar o commit atual do GitHub antes de editar,
 - Toque/click no retrato produz reação curta, sem chamar APIs; navegação e preferências de acessibilidade preservadas.
 - CI estendida para validar a sintaxe de web/mascots.js e approvals-ui.js; testes de 2D, estados, campos, APIs, redução de movimento e roteamento estático no servidor Node.
 - Não foi copiado código do Open Duet nesta etapa. Nenhum recurso 3D foi incorporado.
+
+
+### 04/11/2026 — validação da nova interface Crew Studio
+- Commit 0164799: reconstrução da interface HTML/CSS, criação de web/mascots.js, integração de personalidades e estados reativos com /api/runs, correção da rota /mascots.js no servidor Node, e cobertura tests/crew-studio.test.js.
+- Primeiro CI falhou em um falso positivo do teste que buscava a expressão "WebGL" inclusive em comentário que dizia "Sem WebGL"; nenhum teste de função dos mascotes falhou. Corrigido no commit 94d6002.
+- CI GitHub Actions ONLINE aprovada no commit 94d6002, workflow https://github.com/AnderHonorato/Orquestrar-Agentes/actions/runs/41764729880. Todos os testes de código e checagens Node passaram.
+- O novo projeto usa SVG/CSS/JS vetorial 2D, sem dependências 3D; quatro personagens e movimentos específicos com suporte a prefers-reduced-motion.
+- O backend dos provedores e APIs de aprovação segue inalterado. O sistema NÃO faz streaming individual; os estados são atualizados quando a requisição começa e quando a resposta completa chega.
+- BLOQUEIO DE PUBLICAÇÃO: Vercel retornou 402 payment_required / api-deployments-free-per-day (mais de 100 deployments por dia; aguardar janela de 24h ou rever plano pela conta, sem cobrança automática). A integração Git não disponibilizou um novo deployment READY para os commits 0164799/94d6002 na última consulta. O link estável do Vercel aponta para uma versão anterior. Não alegar que o novo Crew Studio já está disponível no site público.
+- PRÓXIMAS ETAPAS: publicar prévia do commit testado quando quota disponível, verificar desktop e Android por captura de tela, testar toques e estados animados em navegador real, corrigir bugs visuais. Manter a branch ander-flow/organic-orchestrator separada da main.
