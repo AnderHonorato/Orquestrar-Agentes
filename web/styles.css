@@ -121,3 +121,25 @@ pre{white-space:pre-wrap;overflow-wrap:anywhere;font:inherit;line-height:1.75}
 }
 @media(max-width:360px){.studio-heading h1{font-size:39px}.crew-board{padding:8px}.agent{padding:9px 7px}.agent-svg{height:130px}.portrait{min-height:132px}.library-grid{grid-template-columns:1fr}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+
+
+/* Organic 2D: personagens expressivos, foco nos olhos e movimento próprio. */
+.agent:nth-child(1){--agent-glow:#7d9ff1;--face:#d5dfff}
+.agent:nth-child(2){--agent-glow:#f4b46a;--face:#ffe0a9}
+.agent:nth-child(3){--agent-glow:#b49af0;--face:#ded1ff}
+.agent:nth-child(4){--agent-glow:#e99ba7;--face:#ffdae0}
+.agent .portrait:before{background:color-mix(in srgb,var(--agent-glow) 20%,var(--surface2));border:1px solid color-mix(in srgb,var(--agent-glow) 28%,transparent)}
+.agent:hover .portrait:before,.agent:focus-within .portrait:before{background:color-mix(in srgb,var(--agent-glow) 29%,var(--surface2))}
+.agent .agent-svg{filter:drop-shadow(0 12px 10px #05070620)}
+.agent:nth-child(1) .head{animation-duration:7.2s}
+.agent:nth-child(2) .head{animation-duration:3.8s}
+.agent:nth-child(3) .head{animation-duration:9.1s}
+.agent:nth-child(4) .head{animation-duration:5.2s}
+.agent:nth-child(2) .portrait:hover .head{transform:rotate(-8deg) translateY(-5px)}
+.agent:nth-child(3) .portrait:hover .head{transform:rotate(6deg)}
+.agent:nth-child(4) .portrait:hover .head{transform:rotate(-5deg) translateY(-3px)}
+.agent[data-mood="working"] .portrait:before{box-shadow:0 0 0 4px color-mix(in srgb,var(--agent-glow) 10%,transparent);animation:organic-aura 2.1s ease-in-out infinite}
+.agent[data-mood="done"] .portrait:before{box-shadow:0 0 24px color-mix(in srgb,var(--agent-glow) 26%,transparent)}
+.agent .portrait:active .head{transform:translateY(5px) scale(.97)}
+@keyframes organic-aura{50%{box-shadow:0 0 0 12px color-mix(in srgb,var(--agent-glow) 3%,transparent)}}
+@media(prefers-reduced-motion:reduce){.agent[data-mood="working"] .portrait:before{animation:none}.agent .head,.agent .eye-lids{animation:none!important}}
