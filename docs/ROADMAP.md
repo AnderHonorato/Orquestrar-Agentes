@@ -123,3 +123,13 @@
 - Commits `4b50ea1` e `d5e80e0` na branch `ander-flow/organic-orchestrator`; main não editada.
 - **Não integrado à rota HTTP/UI**; módulo isolado, não representa cobrança real. **Testes ainda não executados**; CI não verificada nesta execução.
 - Próximo: executar Node 22 `npm test`, corrigir falhas, integrar estimativa opcional no fluxo de execução sem expor preços/chaves, exibir detalhamento Organic. Drive não sincronizado.
+
+
+## Execução 2026-11-04 — integração de custos no endpoint
+- Confirmado HEAD remoto inicial `230258d5b1044c06c21e50069a4f22b2c6a5ce7c` antes da alteração.
+- `server/index.js` agora importa `estimateRunCosts` e acrescenta `costEstimate` ao resultado de `POST /api/runs` somente quando `STUDIO_PRICE_BOOK_JSON` estiver configurado no servidor.
+- Formato: objeto JSON cujas chaves são `JSON.stringify([provider, model])`; valores contêm `currency`, `inputPerMillion`, `outputPerMillion`. Exemplo: `{"[\"openai\",\"modelo-a\"]":{"currency":"USD","inputPerMillion":1,"outputPerMillion":2}}`. Valores ilustrativos, **não tarifas oficiais**.
+- JSON inválido ou valor raiz que não seja objeto bloqueia a inicialização. Tarifas ausentes e uso parcial continuam sem total monetário completo, conforme `run-costs.js`.
+- Commit de implementação: `dc420bf`. **Sem testes executados ou CI confirmada nesta execução.** Não afirmar deploy nem custos faturados.
+- Próximo: teste HTTP com variável de ambiente, validação de configurações por modelo, exibição Organic de custos e execução da suíte completa Node 22+.
+- Sincronização Google Drive, desktop e APK continuam pendentes.
