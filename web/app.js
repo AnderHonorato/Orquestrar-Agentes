@@ -260,6 +260,28 @@ function displayResult(result) {
   $('result').textContent = result.summary || 'Nenhum resumo recebido.';
   const responses = $('agent-responses');
   responses.replaceChildren();
+  const previousCost = $('cost-details');
+  if (previousCost) previousCost.remove();
+  if (result.costEstimate) {
+    const cost = result.costEstimate;
+    const panel = element('section', undefined, 'card');
+    panel.id = 'cost-details';
+    panel.setAttribute('aria-label', 'Estimativa de custos');
+    panel.append(element('h3', 'Estimativa de consumo'));
+    const summary = cost.complete && Number.isFinite(cost.amount) && cost.currency
+      ? new Intl.NumberFormat('pt-BR', { style: 'currency', currency: cost.currency, maximumFractionDigits: 6 }).format(cost.amount)
+      : 'Total indisponível: consumo parcial, tarifa ausente ou moedas incompatíveis.';
+    panel.append(element('p', summary));
+    panel.append(element('p', 'Estimativa com tarifas configuradas pelo operador; não representa cobrança.', 'hint'));
+    for (const item of cost.items || []) {
+      const row = element('p', item.agent + ' · ' + (item.provider || 'provedor não informado') + ' / ' + (item.model || 'modelo não informado') + ': ' +
+        (item.complete && Number.isFinite(item.amount) && item.currency
+          ? new Intl.NumberFormat('pt-BR', { style: 'currency', currency: item.currency, maximumFractionDigits: 6 }).format(item.amount)
+          : 'sem estimativa completa'));
+      panel.append(row);
+    }
+    $('output').append(panel);
+  }
   for (const item of result.results || []) {
     const details = element('details');
     details.append(element('summary', item.agent), element('pre', item.response));
