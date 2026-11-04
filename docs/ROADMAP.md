@@ -155,3 +155,10 @@
 - Criado `tests/http-cost-security.test.js` com servidor HTTP efêmero: valida `GET /api/health`, `GET /api/providers`, ausência de `priceBook` nessas respostas e rejeição 401 para `POST /api/runs` sem token.
 - Commit `c015f1d`, somente branch de desenvolvimento. **Teste ainda não executado nesta rodada**; precisa de CI Node 22 para confirmação. O teste não valida provedores reais nem o custo de uma execução autenticada.
 - Próximo: executar CI, adicionar teste HTTP autenticado com provedor simulado e tarifas fornecidas pelo operador; verificar UI no navegador. Drive, desktop, APK e integração Open Duet permanecem pendentes.
+
+## Execução 2026-11-04 — contrato HTTP de custo e histórico
+- Estado remoto inicial confirmado: `f654cca722174bf8b8610dc1b549d61547ae33e1`; GitHub Actions desse commit: `success` (run 41785187348).
+- Adicionado `tests/http-run-cost-integration.test.js` (commit `0383ebe`): teste de `POST /api/runs` autenticado com mock de Ollama, um especialista e líder, cálculo BRL por modelo, persistência em `/api/history` e ausência de vazamento do objeto `priceBook`.
+- Teste isola `DATA_DIR` temporário e restaura variáveis de ambiente/fetch. Respostas dos provedores são simuladas, não representam API real ou cobrança.
+- **Teste novo ainda não confirmado pela CI**; verificar execução do commit e corrigir falhas se houver. `main` não editada. Drive, Open Duet, builds desktop/APK continuam pendentes.
+- Próximo: confirmar CI, adicionar caso HTTP de uso incompleto/tarifa ausente, validar UI no navegador e iniciar auditoria de compatibilidade/licenças do Open Duet.
