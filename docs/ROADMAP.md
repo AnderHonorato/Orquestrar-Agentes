@@ -108,3 +108,10 @@
 - Não alterado o código dos provedores nem a main. CI GitHub Actions é independente do limite de builds da Vercel.
 - **Não confirmado:** execução/resultado do workflow; testes locais e contratos reais dos provedores continuam pendentes. Não confundir workflow configurado com suíte aprovada.
 - Próximo: verificar o run de push no GitHub Actions, corrigir falhas efetivas, depois avançar para custo por tabela de preços versionada. Drive não sincronizado.
+
+## Execução 2026-11-03 — estimativa monetária isolada
+- Adicionado `server/cost-estimate.js` para calcular custo **estimado** apenas quando o operador informa tarifas por milhão de tokens e moeda; nunca presume preços de provedores.
+- Adicionado `tests/cost-estimate.test.js` com quatro casos: cálculo, ausência de tarifas/uso incompleto, entradas inválidas e tarifa zero explícita.
+- Commits `cbfed8f` e `289f5ca`; a `main` não foi alterada.
+- **Ainda não integrado** ao endpoint/orquestrador; não há cobrança, consulta de preços, nem medição financeira real. Testes não executados nesta rodada.
+- Próximo: integrar tarifas versionadas **por provedor/modelo** com validação de origem, sem aplicar tarifa única a agentes de modelos diferentes; testar a suíte Node e verificar CI. Google Drive pendente.
