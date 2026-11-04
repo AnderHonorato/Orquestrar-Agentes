@@ -199,3 +199,9 @@
 - Teste estático `tests/organic-signatures.test.js` verifica a presença das assinaturas, paletas individuais e preferência por movimento reduzido.
 - Commits `75d54d7` e `12cb233`; CI e renderização em navegador ainda não confirmadas nesta execução.
 - Próximos passos: validar CI e contraste visual no celular, melhorar expressões e comportamento dos olhos, avançar integração de ferramentas com aprovação. Open Duet não importado; desktop/APK e Drive pendentes.
+
+## 2026-11-04 — expressões individuais dos agentes
+- HEAD inicial confirmado no GitHub: `f38334d`. Deploy Vercel READY encontrado para `12cb233`, não para o HEAD inicial; URL pública sem autenticação não verificada.
+- Commits `58118e7`, `217e881` e `d30af59`: olhos SVG com classes próprias, formatos por personalidade e expressões de erro/conclusão; teste estático `tests/organic-eyes.test.js` sem novas dependências.
+- Teste automatizado e renderização visual **ainda não executados/confirmados**; verificar CI Node 22 e aparência no celular, incluindo movimento reduzido. Nenhum recurso externo foi integrado.
+- Próximo lote: teste real em navegador, aprovação humana para ações externas, auditoria de licença e compatibilidade do Open Duet. Desktop/APK e backup Drive pendentes.
