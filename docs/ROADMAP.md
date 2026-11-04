@@ -169,3 +169,12 @@
 - Três testes de regressão adicionados em `tests/run-costs.test.js`, cobrindo ausência de tarifa, moedas incompatíveis e nenhuma tarifa.
 - Commits de código/teste: `de07121` e `3653a11`. Não foi verificada a CI deste novo lote nesta execução.
 - Próximo: confirmar CI, integrar subtotal com indicação explícita de parcialidade na interface, validar comportamento em navegador e avançar na adaptação do Open Duet com auditoria de licença. Google Drive, desktop e APK ainda pendentes.
+
+
+## Execução 2026-11-04 — subtotal parcial na interface Organic
+- HEAD inicial confirmado: `1519c44890f5351f69825daea61e3f11c7fcb8ad`. Workflow GitHub Actions `41799308373` concluído com `success` nesse commit.
+- `web/app.js` agora mostra subtotal conhecido apenas quando o total está incompleto, existe moeda única e a contagem de itens é consistente; mantém aviso explícito de que não é custo total.
+- `tests/organic-cost-subtotal.test.js` adiciona duas verificações estáticas da interface (não substituem teste em navegador).
+- Commits `149bdc1` e `cd2d09b`; `main` preservada.
+- CI do novo lote ainda não confirmada; testar `npm test` no Node 22 e smoke test visual com casos de moedas diferentes e ausência de tarifa.
+- Pendente: adaptação Open Duet com revisão Apache-2.0, builds desktop/APK e backup na pasta do Drive.
