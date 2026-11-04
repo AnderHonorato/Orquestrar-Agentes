@@ -115,3 +115,11 @@
 - Commits `cbfed8f` e `289f5ca`; a `main` não foi alterada.
 - **Ainda não integrado** ao endpoint/orquestrador; não há cobrança, consulta de preços, nem medição financeira real. Testes não executados nesta rodada.
 - Próximo: integrar tarifas versionadas **por provedor/modelo** com validação de origem, sem aplicar tarifa única a agentes de modelos diferentes; testar a suíte Node e verificar CI. Google Drive pendente.
+
+## Execução 2026-11-04 — custos por modelo (módulo isolado)
+- Confirmado estado remoto antes de escrever: HEAD inicial `b7d1fdf` (QA Crew Studio); não repetir módulos existentes.
+- Criado `server/run-costs.js` para calcular custos individuais de especialistas e líder usando somente tabela de preços explícita indexada por `[provedor, modelo]`; sem presumir preços vigentes.
+- Criado `tests/run-costs.test.js` com cinco cenários: soma, tarifa ausente, moedas diferentes, execução parcial e telemetria ausente.
+- Commits `4b50ea1` e `d5e80e0` na branch `ander-flow/organic-orchestrator`; main não editada.
+- **Não integrado à rota HTTP/UI**; módulo isolado, não representa cobrança real. **Testes ainda não executados**; CI não verificada nesta execução.
+- Próximo: executar Node 22 `npm test`, corrigir falhas, integrar estimativa opcional no fluxo de execução sem expor preços/chaves, exibir detalhamento Organic. Drive não sincronizado.
