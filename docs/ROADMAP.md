@@ -193,3 +193,9 @@
 - Evidência: arquivos e commits gravados na branch `ander-flow/organic-orchestrator`; `main` não alterada. **Testes e inspeção visual deste lote ainda não confirmados**.
 - Bloqueios: remodelagem completa dos SVGs, validação em navegador/celular, publicação da última versão, integração Open Duet, desktop/APK e backup Drive pendentes.
 - Próximo: executar CI, corrigir regressões, redesenhar SVGs 2D com formas mais distintas e validar deploy público por commit.
+
+## 2026-11-04 — identidades visuais SVG Organic
+- Adicionadas quatro assinaturas vetoriais distintas aos retratos dos agentes, usando a cor individual `--agent-glow` já definida em CSS; sem imagens externas ou WebGL.
+- Teste estático `tests/organic-signatures.test.js` verifica a presença das assinaturas, paletas individuais e preferência por movimento reduzido.
+- Commits `75d54d7` e `12cb233`; CI e renderização em navegador ainda não confirmadas nesta execução.
+- Próximos passos: validar CI e contraste visual no celular, melhorar expressões e comportamento dos olhos, avançar integração de ferramentas com aprovação. Open Duet não importado; desktop/APK e Drive pendentes.
