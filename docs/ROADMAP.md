@@ -140,3 +140,11 @@
 - Commits `3d71789` e `4ad3cd8` na branch de desenvolvimento; main não editada.
 - **Testes e CI não executados/confirmados nesta rodada.** A configuração `STUDIO_PRICE_BOOK_JSON` requer testes HTTP com variáveis de ambiente e validação das tarifas antes de produção.
 - Próximo: executar `npm test` Node 22+, testar endpoint e UI reais, validar tabela de tarifas e segurança do histórico; Google Drive, desktop e APK pendentes.
+
+## Execução 2026-11-04 — validação de tarifas e CI
+- Estado remoto inspecionado: `web/app.js` já continha painel de custos por agente; não foi duplicado.
+- `server/index.js` agora rejeita na inicialização tarifas inválidas (moedas não suportadas, números negativos ou não numéricos, chave que não representa [provedor, modelo]); commit `a653707`.
+- Criado `tests/price-book-config.test.js` com três casos agrupados, incluindo processo Node separado com `NODE_ENV=test`; commit `b3519aa`.
+- GitHub Actions: run `41772871276` do commit anterior `8203f78` concluído com **success**. Run `41778397855` para `a653707` estava **in_progress** no momento da consulta; ainda sem resultado confirmado para `b3519aa`.
+- Não foram feitos testes de API real, instalação desktop/APK, publicação web ou backup no Drive.
+- Próximo: verificar CI do HEAD, smoke test HTTP com tabela válida/inválida, testar painel no navegador, depois implementar empacotamento com licenças auditadas.
