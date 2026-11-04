@@ -272,6 +272,16 @@ function displayResult(result) {
       ? new Intl.NumberFormat('pt-BR', { style: 'currency', currency: cost.currency, maximumFractionDigits: 6 }).format(cost.amount)
       : 'Total indisponível: consumo parcial, tarifa ausente ou moedas incompatíveis.';
     panel.append(element('p', summary));
+    // Subtotal é apenas informativo: jamais substituir o total indisponível.
+    if (!cost.complete && Number.isFinite(cost.knownSubtotal) && cost.currency &&
+        Number.isSafeInteger(cost.knownItems) && Number.isSafeInteger(cost.totalItems) &&
+        cost.knownItems > 0 && cost.knownItems <= cost.totalItems) {
+      const subtotal = new Intl.NumberFormat('pt-BR', {
+        style: 'currency', currency: cost.currency, maximumFractionDigits: 6
+      }).format(cost.knownSubtotal);
+      panel.append(element('p', 'Subtotal conhecido (' + cost.knownItems + ' de ' +
+        cost.totalItems + ' agentes): ' + subtotal + '. Não é o custo total.', 'hint'));
+    }
     panel.append(element('p', 'Estimativa com tarifas configuradas pelo operador; não representa cobrança.', 'hint'));
     for (const item of cost.items || []) {
       const row = element('p', item.agent + ' · ' + (item.provider || 'provedor não informado') + ' / ' + (item.model || 'modelo não informado') + ': ' +
