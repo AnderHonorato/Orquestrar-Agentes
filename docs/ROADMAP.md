@@ -102,3 +102,9 @@
 - Commit `28176db` na branch `ander-flow/organic-orchestrator`; main preservada. Os testes são mocks, **não comprovam compatibilidade real** com serviços externos.
 - Node 22.16.0 disponível no container, porém `git ls-remote` falhou por DNS (`Could not resolve host: github.com`); suíte completa ainda não executada. Verificar no runner CI antes de considerar o lote validado.
 - Próximo: executar `npm test`, corrigir qualquer falha, conferir contratos com APIs reais usando credenciais de teste e avaliar tokenização/custos por modelo. Google Drive ainda não sincronizado.
+
+## Execução 2026-11-03 — reforço do CI independente de deploy
+- Atualizado `.github/workflows/ci.yml` na branch de desenvolvimento (commit `0ed2cd1`): gatilho manual `workflow_dispatch`, permissões somente de leitura, cancelamento de execuções obsoletas, timeout de 12 minutos, Node 22, `NODE_ENV=test`, `npm test` e checagem sintática adicional de engine/orquestrador.
+- Não alterado o código dos provedores nem a main. CI GitHub Actions é independente do limite de builds da Vercel.
+- **Não confirmado:** execução/resultado do workflow; testes locais e contratos reais dos provedores continuam pendentes. Não confundir workflow configurado com suíte aprovada.
+- Próximo: verificar o run de push no GitHub Actions, corrigir falhas efetivas, depois avançar para custo por tabela de preços versionada. Drive não sincronizado.
